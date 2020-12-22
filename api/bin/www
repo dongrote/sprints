@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+require('dotenv').config();
+
+/**
+ * Module dependencies.
+ */
+
+const env = require('../env'),
+  app = require('../app'),
+  log = require('debug-logger')('api:server'),
+  http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+const port = env.port();
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+const server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', err => {
+  log.error(err);
+  process.exit(1);
+});
+server.on('listening', () => log.info(`listening on port ${port}`));
