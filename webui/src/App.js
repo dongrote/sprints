@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import { Component } from 'react';
+import { Container } from 'semantic-ui-react';
+import ProjectList from './components/ProjectList';
+import ProjectView from './views/ProjectView';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {projects: [], project: null, view: 'project-list'};
+  loadProjects() {
+    this.setState({projects: ['centrifuge']});
+  }
+  selectProject(project) {
+    this.setState({project, view: 'project-view'});
+  }
+  componentDidMount() {
+    this.loadProjects();
+  }
+  render() {
+    return (
+      <Container>
+        {this.state.view === 'project-list' &&
+          <ProjectList
+            projects={this.state.projects}
+            onProjectSelect={project => this.selectProject(project)}
+          />}
+        {this.state.view === 'project-view' && <ProjectView project={this.state.project} />}
+      </Container>
+    );
+  }
 }
 
 export default App;
