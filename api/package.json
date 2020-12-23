@@ -3,7 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "npm run unit",
+    "unit": "NODE_ENV=test mocha --recursive --reporter=min -b",
+    "unit-verbose": "NODE_ENV=test mocha --recursive",
+    "unit-watch": "NODE_ENV=test mocha --recursive --reporter=dot -b -w",
+    "unit-watch-verbose": "NODE_ENV=test mocha --recursive -b -w"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
