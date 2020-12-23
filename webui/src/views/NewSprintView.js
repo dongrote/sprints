@@ -1,7 +1,7 @@
 import { Component } from 'react';
 
-class NewUserStoryView extends Component {
+class NewSprintView extends Component {
   render() { return (<div>Hi</div>)}
 }
 
-export default NewUserStoryView;
+export default NewSprintView;

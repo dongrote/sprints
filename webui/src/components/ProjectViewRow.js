@@ -1,4 +1,5 @@
-import {Grid, Header, Button} from 'semantic-ui-react';
+import {Grid, Header, Icon, Button} from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 
 const ProjectViewRow = props => (
   <Grid>
@@ -7,7 +8,12 @@ const ProjectViewRow = props => (
         <Header as='h3' icon={props.icon} content={props.title} />
       </Grid.Column>
       <Grid.Column textAlign='right'>
-        <Button color={props.buttonColor} icon={props.buttonIcon} content={props.buttonContent} />
+        <Link to={props.buttonLinkTo}>
+          <Button color={props.buttonColor}>
+            <Icon name={props.buttonIcon} />
+            {props.buttonContent}
+          </Button>
+        </Link>
       </Grid.Column>
     </Grid.Row>
     <Grid.Row columns={1}>

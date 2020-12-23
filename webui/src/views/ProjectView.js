@@ -1,12 +1,18 @@
 import { Component } from 'react';
-import {Grid, Header} from 'semantic-ui-react';
+import {Button, Grid, Header, Icon} from 'semantic-ui-react';
+import {Link} from 'react-router-dom';
 import ProjectViewRow from '../components/ProjectViewRow';
 import UserStoryColumn from '../components/UserStoryColumn';
 import Sprint from '../components/Sprint';
 
 
 class ProjectView extends Component {
-  state = {userStories: [], sprints: []};
+  state = {project: null, userStories: [], sprints: []};
+  async loadProject(ProjectId) {
+    return new Promise(resolve => {
+      setTimeout(() => resolve({id: ProjectId, name: 'centrifuge'}), 500);
+    });
+  }
   loadUserStories() {
     this.setState({
       userStories: [
@@ -26,16 +32,27 @@ class ProjectView extends Component {
       ]
     });
   }
-  componentDidMount() {
+  async componentDidMount() {
+    const project = await this.loadProject(this.props.ProjectId);
     this.loadUserStories();
     this.loadSprints();
+    this.setState({project});
   }
   render() {
+    if (!this.state.project) return null;
     return (
       <Grid columns={1}>
-        <Grid.Row>
+        <Grid.Row columns={2}>
           <Grid.Column>
-            <Header as='h1' icon='briefcase' content={this.props.project} />
+            <Header as='h1' icon='briefcase' content={this.state.project.name} />
+          </Grid.Column>
+          <Grid.Column textAlign='right'>
+            <Link to='/'>
+              <Button basic>
+                <Icon name='home' />
+                Home
+              </Button>
+            </Link>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
@@ -46,6 +63,7 @@ class ProjectView extends Component {
             buttonColor='blue'
             buttonIcon='plus'
             buttonContent='New Sprint'
+            buttonLinkTo={`/project/${this.props.ProjectId}/sprint`}
           >
             {this.state.sprints.map((sprint, i) => (
               <Sprint
@@ -70,6 +88,7 @@ class ProjectView extends Component {
             buttonColor='green'
             buttonIcon='plus'
             buttonContent='New User Story'
+            buttonLinkTo={`/project/${this.props.ProjectId}/story`}
           >
             <Grid stackable columns={3}>
               <Grid.Row>
