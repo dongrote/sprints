@@ -2,6 +2,7 @@
 const expect = require('expect'),
   simple = require('simple-mock'),
   Sprint = require('../../core/Sprint'),
+  UserStory = require('../../core/UserStory'),
   Project = require('../../core/Project');
 
 describe('Project', () => {
@@ -67,5 +68,14 @@ describe('Project', () => {
         expect(Sprint.create.lastCall.args[2]).toEqual({[randomKey]: randomValue});
       });
     });
+    describe('createUserStory', () => {
+      beforeEach(() => simple.mock(UserStory, 'create'));
+    });
+    describe('findAllSprints', () => {});
+    describe('findAllUserStories', () => {});
+    describe('findAllReadyUserStories', () => {});
+    describe('findAllAllocatedUserStories', () => {});
+    describe('findAllDoneUserStories', () => {});
+    describe('velocityValues', () => {});
   });
 });

@@ -18,5 +18,12 @@ describe('Sprint', () => {
       });
     });
   });
-  describe('instance methods', () => {});
+  describe('instance methods', () => {
+    describe('findAllUserStories', () => {});
+    describe('claimUserStory', () => {});
+    describe('remitUserStory', () => {});
+    describe('completeUserStory', () => {});
+    describe('burndownValues', () => {});
+    describe('velocity', () => {});
+  });
 });

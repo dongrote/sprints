@@ -23,6 +23,8 @@ class Project {
   async createSprint(name, options) {
     return Sprint.create(this.data.id, name, options);
   }
+
+  async createUserStory(story, points, options) {}
 }
 
 exports = module.exports = Project;
