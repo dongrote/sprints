@@ -13,7 +13,7 @@ exports.use(express.json());
 exports.use(express.urlencoded({ extended: false }));
 exports.use(cookieParser());
 
-exports.use('/', router);
+exports.use('/api', router);
 exports.use((req, res, next) => setImmediate(next, new HttpError(404)));
 exports.use((err, req, res, next) => {
   const statusCode = _.get(err, 'statusCode', 500);

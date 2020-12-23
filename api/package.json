@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "db:migrate": "sequelize-cli db:migrate --config db/config/config.js --migrations-path db/migrations",
     "start": "node ./bin/www",
     "test": "npm run unit",
     "unit": "NODE_ENV=test mocha --recursive --reporter=min -b",
@@ -18,7 +19,10 @@
     "http-error-constructor": "^0.1.0",
     "lodash": "^4.17.20",
     "morgan": "~1.9.1",
-    "socket.io": "^3.0.4"
+    "sequelize": "^6.3.5",
+    "sequelize-cli": "^6.2.0",
+    "socket.io": "^3.0.4",
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {
     "expect": "^26.6.2",
