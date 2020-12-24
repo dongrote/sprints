@@ -2,13 +2,13 @@ import { Label } from 'semantic-ui-react';
 
 const colorMap = {
   READY: 'green',
-  ALLOC: 'orange',
+  CLAIM: 'orange',
   DONE: 'blue',
 };
 
 const contentMap = {
   READY: 'Ready',
-  ALLOC: 'Allocated',
+  CLAIM: 'Claimed',
   DONE: 'Done',
 };
 

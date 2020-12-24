@@ -1,31 +1,63 @@
 const _ = require('lodash'),
-  models = require('../db/models');
+  models = require('../db/models'),
+  {Op} = models.Sequelize;
 
 class UserStory {
+  static async status(UserStoryId) {
+    const row = await models.UserStory.findByPk(UserStoryId, {
+      attributes: ['closingSprintId'],
+      include: [models.Sprint],
+    });
+    if (!row) return;
+    if (row.closingSprintId) return 'DONE';
+    if (row.Sprints.length) return 'CLAIM';
+    return 'READY';
+  }
+
+  static async dbrowToJSON(dbrow) {
+    const json = dbrow.toJSON ? dbrow.toJSON() : dbrow;
+    const status = await UserStory.status(json.id);
+    return _.assignIn(json, {status});
+  }
+
   static async create(ProjectId, story, points, options) {
     if (isNaN(ProjectId)) throw new TypeError(`ProjectId must be a number`);
     if (typeof story !== 'string') throw new TypeError(`story must be a string`);
     const values = {ProjectId, title: story, points};
     if (_.has(options, 'description')) values.description = options.description;
     const row = await models.UserStory.create(values);
-    return new UserStory(row.toJSON());
+    return new UserStory(await UserStory.dbrowToJSON(row));
   }
 
   static async findInSprintById(SprintId, UserStoryId) {
     const row = await models.UserStoryClaims.findOne({where: {SprintId, UserStoryId}, include: [models.UserStory]});
     if (row === null) return null;
-    return new UserStory(row.toJSON().UserStory);
+    return new UserStory(await UserStory.dbrowToJSON(row.UserStory));
+  }
+
+  static async findAllInSprint(SprintId) {
+    const {count, rows} = await models.UserStoryClaims.findAndCountAll({
+      where: {SprintId},
+      include: [models.UserStory],
+    });
+    return {count, results: await Promise.all(rows.map(async r => new UserStory(await UserStory.dbrowToJSON(r.UserStory))))};
   }
 
   static async findAllInProject(ProjectId) {
     const {count, rows} = await models.UserStory.findAndCountAll({where: {ProjectId}});
-    return {count, results: rows.map(r => new UserStory(r.toJSON()))};
+    return {count, results: await Promise.all(rows.map(async r => new UserStory(await UserStory.dbrowToJSON(r))))};
+  }
+
+  static async findAllReadyInProject(ProjectId) {
+    const {count, rows} = await models.UserStory.findAndCountAll({where: {ProjectId, closingSprintId: null}});
+    return {count, results: await Promise.all(rows.map(async r => new UserStory(await UserStory.dbrowToJSON(r))))};
   }
 
   constructor(data) { this.data = data; }
 
   id() { return this.data.id; }
   points() { return this.data.points; }
+  completedAt() { return this.data.completedAt; }
   toJSON() { return this.data; }
 
   async markComplete(SprintId) {

@@ -54,6 +54,12 @@ class Project {
   async findAllUserStories() {
     return UserStory.findAllInProject(this.id());
   }
+
+  async velocity() {
+    const {results: sprints} = await this.findAllSprints();
+    sprints.reverse();
+    return sprints.map(sprint => sprint.velocity());
+  }
 }
 
 exports = module.exports = Project;

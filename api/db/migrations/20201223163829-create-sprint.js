@@ -32,9 +32,11 @@ module.exports = {
       },
       completedPoints: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
       },
       claimedPoints: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
       },
       createdAt: {
         allowNull: false,

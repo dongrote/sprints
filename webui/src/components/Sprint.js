@@ -26,7 +26,7 @@ const Sprint = props => (
     <Card.Content extra>
       <PointStatistics
         predicted={props.predictedPoints}
-        allocated={props.allocatedPoints}
+        allocated={props.claimedPoints}
         completed={props.completedPoints}
         remaining={props.remainingPoints}
       />

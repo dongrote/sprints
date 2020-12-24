@@ -21,9 +21,15 @@ module.exports = (sequelize, DataTypes) => {
     finishAt: DataTypes.DATE,
     description: DataTypes.STRING,
     predictedPoints: DataTypes.INTEGER,
-    completedPoints: DataTypes.INTEGER,
-    claimedPoints: DataTypes.INTEGER,
-  }, {
+    completedPoints: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    claimedPoints: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    }, {
     sequelize,
     modelName: 'Sprint',
   });

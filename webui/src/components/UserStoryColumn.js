@@ -16,9 +16,11 @@ const UserStoryColumn = props => {
           <Table.Cell>
             <UserStory
               fluid
-              onDemote={props.onDemote}
-              onPromote={props.onPromote}
-              title={story.name}
+              UserStoryId={story.id}
+              onClaim={props.onClaim}
+              onRemit={props.onRemit}
+              onComplete={props.onComplete}
+              title={story.title}
               points={story.points}
               status={story.status}
               description={story.description}

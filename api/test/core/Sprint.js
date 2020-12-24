@@ -50,7 +50,10 @@ describe('Sprint', () => {
           count: expect.any(Number),
           results: expect.any(Array),
         });
-        expect(models.Sprint.findAndCountAll.lastCall.arg).toEqual({where: {ProjectId: 0}});
+        expect(models.Sprint.findAndCountAll.lastCall.arg).toEqual({
+          where: {ProjectId: 0},
+          order: [['id', 'DESC']],
+        });
       });
     });
   });

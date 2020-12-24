@@ -5,9 +5,12 @@ import { Link } from 'react-router-dom';
 class ProjectList extends Component {
   state = {projects: []};
   async fetchProjects() {
-    return new Promise(resolve => {
-      setTimeout(() => resolve([{id: 1234, name: 'centrifuge'}]), 1000);
-    });
+    const res = await fetch('/api/projects');
+    if (res.ok) {
+      const json = await res.json();
+      return json.results;
+    }
+    return [];
   }
   async componentDidMount() {
     const projects = await this.fetchProjects();

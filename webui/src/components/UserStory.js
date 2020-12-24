@@ -5,19 +5,7 @@ const UserStory = props => (
   <Card fluid={props.fluid}>
     <Card.Content>
       <Card.Header>
-        <Grid columns={2}>
-          <Grid.Row>
-            <Grid.Column>
-              {props.title}
-            </Grid.Column>
-            <Grid.Column textAlign='right'>
-              <Button.Group>
-                {props.onDemote && <Button basic icon='step backward' onClick={() => props.onDemote(props.title)} />}
-                {props.onPromote && <Button basic icon='step forward' onClick={() => props.onPromote(props.title)} />}
-              </Button.Group>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
+        {props.title}
       </Card.Header>
       {props.description && <Card.Description content={props.description} />}
     </Card.Content>
@@ -28,7 +16,10 @@ const UserStory = props => (
             {`${props.points} point${props.points === 1 ? '' : 's'}`}
           </Grid.Column>
           <Grid.Column textAlign='right'>
-            <StatusLabel status={props.status} />
+            {props.onClaim && <Button color='orange' content='Claim' onClick={() => props.onClaim(props.UserStoryId)} />}
+            {props.onRemit && <Button color='red' content='Remit' onClick={() => props.onRemit(props.UserStoryId)} />}
+            {props.onComplete && <Button color='blue' content='Complete' onClick={() => props.onComplete(props.UserStoryId)} />}
+            {!(props.onClaim || props.onRemit) && <StatusLabel status={props.status} />}
           </Grid.Column>
         </Grid.Row>
       </Grid>
