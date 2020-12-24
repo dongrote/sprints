@@ -15,7 +15,6 @@ const BurndownChart = props => {
       title: 'Burndown',
       hAxis: {viewWindow: {min: 0}, title: 'Days of Sprint'},
       vAxis: {minValue: 0},
-      legend: {position: 'none'},
       series: {
         0: {color: 'orange'},
         1: {color: 'blue'},
