@@ -8,6 +8,7 @@ class SprintView extends Component {
   state = {
     project: '',
     ProjectId: null,
+    sprint: '',
     stories: [],
     predictedPoints: 0,
     completedPoints: 0,
@@ -40,7 +41,7 @@ class SprintView extends Component {
     const res = await fetch(`/api/sprints/${SprintId}`);
     if (res.ok) {
       const json = await res.json();
-      this.setState({project: json.Project.name, ProjectId: json.ProjectId});
+      this.setState({project: json.Project.name, ProjectId: json.ProjectId, sprint: json.title});
     }
   }
   async loadStories(SprintId) {
@@ -74,23 +75,71 @@ class SprintView extends Component {
               <Header.Content>{this.state.project}</Header.Content>
             </Header>
           </Grid.Column>
-          <Grid.Column textAlign='right'>
-            <Link to={`/sprint/${this.props.SprintId}/claim`}>
-              <Button
-                color='orange'
-                icon='plus'
-                labelPosition='left'
-                content='Claim User Story'
-              />
-            </Link>
-            <Link to={`/project/${this.state.ProjectId}`}>
-              <Button
-                basic
-                icon='briefcase'
-                labelPosition='left'
-                content='Back to Project'
-              />
-            </Link>
+          <Grid.Column textAlign='right' verticalAlign='middle'>
+            <Grid columns={1}>
+              <Grid.Row only='mobile'>
+                <Grid.Column>
+                  <Link to={`/project/${this.state.ProjectId}`}>
+                    <Button
+                      basic
+                      size='mini'
+                      icon='left arrow'
+                      labelPosition='left'
+                      content='Back'
+                    />
+                  </Link>
+                </Grid.Column>
+              </Grid.Row>
+              <Grid.Row only='tablet computer'>
+                <Grid.Column>
+                  <Link to={`/project/${this.state.ProjectId}`}>
+                    <Button
+                      basic
+                      icon='left arrow'
+                      labelPosition='left'
+                      content='Back to Project'
+                    />
+                  </Link>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={2}>
+          <Grid.Column>
+            <Header as='h2'>
+              <Icon name='forward'/>
+              <Header.Content>{this.state.sprint}</Header.Content>
+            </Header>
+          </Grid.Column>
+          <Grid.Column textAlign='right' verticalAlign='middle'>
+            <Grid columns={1}>
+              <Grid.Row only='mobile'>
+                <Grid.Column>
+                  <Link to={`/sprint/${this.props.SprintId}/claim`}>
+                    <Button
+                      size='mini'
+                      color='orange'
+                      icon='plus'
+                      labelPosition='left'
+                      content='Claim'
+                    />
+                  </Link>
+                </Grid.Column>
+              </Grid.Row>
+              <Grid.Row only='tablet computer'>
+                <Grid.Column>
+                  <Link to={`/sprint/${this.props.SprintId}/claim`}>
+                    <Button
+                      color='orange'
+                      icon='plus'
+                      labelPosition='left'
+                      content='Claim User Story'
+                    />
+                  </Link>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>
@@ -98,22 +147,28 @@ class SprintView extends Component {
             <BurndownChart ideal={this.state.idealBurndown} real={this.state.realBurndown} />
           </Grid.Column>
         </Grid.Row>
-        <Grid.Row columns={2}>
+        <Grid.Row columns={1}>
           <Grid.Column>
-            <UserStoryColumn
-              color='orange'
-              header='Claimed'
-              userStories={this.state.stories.filter(story => story.status === 'CLAIM')}
-              onRemit={UserStoryId => this.remitUserStory(this.props.SprintId, UserStoryId)}
-              onComplete={UserStoryId => this.completeUserStory(this.props.SprintId, UserStoryId)}
-            />
-          </Grid.Column>
-          <Grid.Column>
-            <UserStoryColumn
-              color='blue'
-              header='Done'
-              userStories={this.state.stories.filter(story => story.status === 'DONE')}
-            />
+            <Grid stackable columns={2}>
+              <Grid.Row>
+                <Grid.Column>
+                  <UserStoryColumn
+                    color='orange'
+                    header='Claimed'
+                    userStories={this.state.stories.filter(story => story.status === 'CLAIM')}
+                    onRemit={UserStoryId => this.remitUserStory(this.props.SprintId, UserStoryId)}
+                    onComplete={UserStoryId => this.completeUserStory(this.props.SprintId, UserStoryId)}
+                  />
+                </Grid.Column>
+                <Grid.Column>
+                  <UserStoryColumn
+                    color='blue'
+                    header='Done'
+                    userStories={this.state.stories.filter(story => story.status === 'DONE')}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
           </Grid.Column>
         </Grid.Row>
       </Grid>

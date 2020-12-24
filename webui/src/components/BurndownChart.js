@@ -9,11 +9,11 @@ const BurndownChart = props => {
   <Chart
     chartType='LineChart'
     loader={<div>Loading Data ...</div>}
-    data={[['Day', 'Ideal Burn', 'Remaining Points']].concat(dailyPoints.map((dp,i) => ([i,dp.ideal, dp.remaining])))}
+    data={[['Day', 'Ideal', 'Real']].concat(dailyPoints.map((dp,i) => ([i,dp.ideal, dp.remaining])))}
     options={{
       animation: {startup: true, duration: 500, easing: 'in'},
-      title: 'Burndown',
-      hAxis: {viewWindow: {min: 0}, title: 'Days of Sprint'},
+      legend: {position: 'top'},
+      hAxis: {viewWindow: {min: 0}, title: 'Burndown'},
       vAxis: {minValue: 0},
       series: {
         0: {color: 'orange'},

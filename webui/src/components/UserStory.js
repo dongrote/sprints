@@ -16,9 +16,11 @@ const UserStory = props => (
             {`${props.points} point${props.points === 1 ? '' : 's'}`}
           </Grid.Column>
           <Grid.Column textAlign='right'>
-            {props.onClaim && <Button color='orange' content='Claim' onClick={() => props.onClaim(props.UserStoryId)} />}
-            {props.onRemit && <Button color='red' content='Remit' onClick={() => props.onRemit(props.UserStoryId)} />}
-            {props.onComplete && <Button color='blue' content='Complete' onClick={() => props.onComplete(props.UserStoryId)} />}
+            <Button.Group compact size='small'>
+              {props.onClaim && <Button color='orange' content='Claim' onClick={() => props.onClaim(props.UserStoryId)} />}
+              {props.onRemit && <Button color='red' content='Remit' onClick={() => props.onRemit(props.UserStoryId)} />}
+              {props.onComplete && <Button color='blue' content='Complete' onClick={() => props.onComplete(props.UserStoryId)} />}
+            </Button.Group>
             {!(props.onClaim || props.onRemit) && <StatusLabel status={props.status} />}
           </Grid.Column>
         </Grid.Row>
