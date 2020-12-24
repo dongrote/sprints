@@ -137,3 +137,34 @@ exports.delete('/sprints/:SprintId/stories/:UserStoryId', async (req, res, next)
     next(err);
   }
 });
+exports.patch('/sprints/:SprintId', async (req, res, next) => {
+  try {
+    const sprint = await core.Sprint.findById(Number(req.params.SprintId));
+    await sprint.update(req.body);
+    res.sendStatus(204);
+  } catch (err) {
+    next(err);
+  }
+});
+exports.get('/stories/:UserStoryId', async (req, res, next) => {
+  try {
+    const story = await core.UserStory.findById(Number(req.params.UserStoryId));
+    if (story === null) throw new HttpError(404);
+    res.json(story);
+  } catch(err) {
+    next(err);
+  }
+});
+exports.patch('/stories/:UserStoryId', (req, res, next) => setImmediate(next, new HttpError(501)));
+/*
+exports.patch('/stories/:UserStoryId', async (req, res, next) => {
+  try {
+    const story = await core.UserStory.findById(Number(req.params.UserStoryId));
+    if (story === null) throw new HttpError(404);
+    await story.update(req.body);
+    res.sendStatus(204);
+  } catch (err) {
+    next(err);
+  }
+});
+*/

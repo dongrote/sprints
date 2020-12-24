@@ -97,6 +97,10 @@ class Sprint {
     await models.Sprint.decrement('claimedPoints', {where: {id: this.id()}, by: story.points()});
     await models.UserStoryClaims.destroy({where: {SprintId: this.id(), UserStoryId}});
   }
+
+  async update(values) {
+    await models.Sprint.update(values, {where: {id: this.id()}});
+  }
 }
 
 exports = module.exports = Sprint;

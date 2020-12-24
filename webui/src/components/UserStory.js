@@ -1,11 +1,23 @@
 import { Button, Card, Grid } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import StatusLabel from  './StatusLabel';
 
 const UserStory = props => (
   <Card fluid={props.fluid}>
     <Card.Content>
       <Card.Header>
-        {props.title}
+        <Grid columns={2}>
+          <Grid.Row>
+            <Grid.Column>
+              {props.title}
+            </Grid.Column>
+            <Grid.Column textAlign='right' verticalAlign='middle'>
+              <Link to={`/story/${props.UserStoryId}/edit`}>
+                <Button disabled compact basic size='mini' icon='edit' />
+              </Link>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </Card.Header>
       {props.description && <Card.Description content={props.description} />}
     </Card.Content>

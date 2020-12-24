@@ -141,5 +141,9 @@ describe('Sprint', () => {
         expect(sprint.velocity()).toBe(completedPoints);
       });
     });
+    describe('setTitle', () => {});
+    describe('setStart', () => {});
+    describe('setFinish', () => {});
+    describe('setPointPrediction', () => {});
   });
 });

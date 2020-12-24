@@ -7,6 +7,8 @@ import SprintView from './views/SprintView';
 import NewSprintView from './views/NewSprintView';
 import NewUserStoryView from './views/NewUserStoryView';
 import ClaimUserStoryView from './views/ClaimUserStoryView';
+import EditSprintView from './views/EditSprintView';
+import EditUserStoryView from './views/EditUserStoryView';
 
 class App extends Component {
   render() {
@@ -36,8 +38,17 @@ class App extends Component {
             render={props => <ClaimUserStoryView SprintId={props.match.params.SprintId} />}
           />
           <Route
+            exact
+            path='/sprint/:SprintId/edit'
+            render={props => <EditSprintView SprintId={props.match.params.SprintId} />}
+          />
+          <Route
             path='/sprint/:SprintId'
             render={props => <SprintView SprintId={props.match.params.SprintId} />}
+          />
+          <Route
+            path='/story/:UserStoryId/edit'
+            render={props => <EditUserStoryView UserStoryId={props.match.params.UserStoryId} />}
           />
         </Switch>
       </Container>

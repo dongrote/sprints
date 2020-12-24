@@ -1,4 +1,5 @@
 import {Button, Card, Grid} from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 import PointStatistics from './PointStatistics';
 import day from 'dayjs';
 
@@ -13,7 +14,9 @@ const Sprint = props => (
             <Grid.Column>{props.title}</Grid.Column>
             <Grid.Column textAlign='right'>
               <Button.Group>
-                <Button basic icon='edit outline' />
+                <Link to={`/sprint/${props.SprintId}/edit`}>
+                  <Button basic icon='edit outline' />
+                </Link>
                 <Button basic icon='chart line' />
                 <Button basic icon='ellipsis horizontal' />
               </Button.Group>
@@ -31,6 +34,9 @@ const Sprint = props => (
         remaining={props.remainingPoints}
       />
     </Card.Content>
+    {props.description && <Card.Content extra>
+      <pre>{props.description}</pre>
+    </Card.Content>}
   </Card>
 );
 

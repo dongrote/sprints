@@ -62,13 +62,11 @@ class ProjectView extends Component {
             </Link>
           </Grid.Column>
         </Grid.Row>
-        {this.state.velocity.length > 0 &&
-          <Grid.Row columns={1}>
-            <Grid.Column>
-              <VelocityChart velocities={this.state.velocity} />
-            </Grid.Column>
-          </Grid.Row>
-        }
+        <Grid.Row columns={1}>
+          <Grid.Column>
+            <VelocityChart velocities={this.state.velocity} />
+          </Grid.Column>
+        </Grid.Row>
         <Grid.Row>
           <Grid.Column>
           <ProjectViewRow
@@ -83,6 +81,7 @@ class ProjectView extends Component {
               <Link key={i} to={`/sprint/${sprint.id}`}>
               <Sprint
                 key={i}
+                SprintId={sprint.id}
                 title={sprint.title}
                 startDate={sprint.startAt}
                 endDate={sprint.finishAt}

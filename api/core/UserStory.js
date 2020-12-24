@@ -53,6 +53,11 @@ class UserStory {
     return {count, results: await Promise.all(rows.map(async r => new UserStory(await UserStory.dbrowToJSON(r))))};
   }
 
+  static async findById(UserStoryId) {
+    const row = await models.UserStory.findByPk(UserStoryId, {include: [models.Project]});
+    return row ? new UserStory(await UserStory.dbrowToJSON(row)) : null;
+  }
+
   constructor(data) { this.data = data; }
 
   id() { return this.data.id; }
@@ -65,6 +70,10 @@ class UserStory {
       models.UserStory.update({closingSprintId: SprintId}, {where: {id: this.id()}}),
       models.UserStoryClaims.update({completedAt: new Date()}, {where: {SprintId, UserStoryId: this.id()}})
     ]);
+  }
+
+  async update(values) {
+    await models.UserStory.update(values, {where: {id: this.id()}});
   }
 }
 

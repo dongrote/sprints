@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Button, Grid, Header, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import Sprint from '../components/Sprint';
 import BurndownChart from '../components/BurndownChart';
 import UserStoryColumn from '../components/UserStoryColumn';
 
@@ -9,6 +10,9 @@ class SprintView extends Component {
     project: '',
     ProjectId: null,
     sprint: '',
+    description: '',
+    start: null,
+    finish: null,
     stories: [],
     predictedPoints: 0,
     completedPoints: 0,
@@ -41,7 +45,18 @@ class SprintView extends Component {
     const res = await fetch(`/api/sprints/${SprintId}`);
     if (res.ok) {
       const json = await res.json();
-      this.setState({project: json.Project.name, ProjectId: json.ProjectId, sprint: json.title});
+      this.setState({
+        project: json.Project.name,
+        ProjectId: json.ProjectId,
+        sprint: json.title,
+        start: json.startAt,
+        finish: json.finishAt,
+        predictedPoints: json.predictedPoints,
+        completedPoints: json.completedPoints,
+        claimedPoints: json.claimedPoints,
+        remainingPoints: json.claimedPoints - json.completedPoints,
+        description: json.description,
+      });
     }
   }
   async loadStories(SprintId) {
@@ -118,7 +133,6 @@ class SprintView extends Component {
                 <Grid.Column>
                   <Link to={`/sprint/${this.props.SprintId}/claim`}>
                     <Button
-                      size='mini'
                       color='orange'
                       icon='plus'
                       labelPosition='left'
@@ -145,6 +159,21 @@ class SprintView extends Component {
         <Grid.Row columns={1}>
           <Grid.Column>
             <BurndownChart ideal={this.state.idealBurndown} real={this.state.realBurndown} />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={1}>
+          <Grid.Column>
+            <Sprint
+              SprintId={this.props.SprintId}
+              title={this.state.sprint}
+              startDate={this.state.start}
+              endDate={this.state.finish}
+              claimedPoints={this.state.claimedPoints}
+              predictedPoints={this.state.predictedPoints}
+              completedPoints={this.state.completedPoints}
+              remainingPoints={this.state.remainingPoints}
+              description={this.state.description}
+            />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>
