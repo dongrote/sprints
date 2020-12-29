@@ -1,9 +1,19 @@
 import { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Button, Form, Header, Icon, Input } from 'semantic-ui-react';
+import randomWords from 'random-words';
 
 class NewSprintView extends Component {
-  state = {project: '', name: '', points: 0, description: '', start: null, finish: null, redirect: false};
+  state = {
+    suggestion: randomWords({exactly: 1, wordsPerString: 2, separator: '-'}),
+    project: '',
+    name: '',
+    points: 0,
+    description: '',
+    start: null,
+    finish: null,
+    redirect: false,
+  };
   async fetchProjectName(ProjectId) {
     const res = await fetch(`/api/projects/${ProjectId}`);
     if (res.ok) {
@@ -48,6 +58,7 @@ class NewSprintView extends Component {
     }
   }
   async componentDidMount() {
+
     await this.fetchProjectName(this.props.ProjectId);
   }
   render() {
@@ -58,7 +69,7 @@ class NewSprintView extends Component {
           Create a New Sprint for <Icon name='briefcase' /> {this.state.project}
         </Header>
         <Form.Group>
-          <Form.Input label='Name' placeholder='A fancy sprint name' value={this.state.name} onChange={e => this.onNameChange(e.target.value)} />
+          <Form.Input label='Name' placeholder={this.state.suggestion} value={this.state.name} onChange={e => this.onNameChange(e.target.value)} />
           <Form.Field>
             <label>Points Prediction</label>
             <Input>
