@@ -12,6 +12,6 @@ const contentMap = {
   DONE: 'Done',
 };
 
-const StatusLabel = props => <Label color={colorMap[props.status]} content={contentMap[props.status]} />;
+const StatusLabel = props => <Label basic color={colorMap[props.status]} content={contentMap[props.status]} />;
 
 export default StatusLabel;
