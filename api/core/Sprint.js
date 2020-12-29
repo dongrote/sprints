@@ -36,13 +36,20 @@ class Sprint {
 
   velocity() { return this.data.completedPoints; }
 
-  async burndown() {
+  idealBurndownValues() {
     const startAt = day(this.data.startAt),
       finishAt = day(this.data.finishAt),
       claimedPoints = this.claimedPoints();
     const numberOfDays = finishAt.diff(startAt, 'd');
-    const idealBurnRate = this.data.claimedPoints / numberOfDays;
-    const idealBurn = _.range(numberOfDays - 1).map(i => Math.round(this.data.claimedPoints - (idealBurnRate * i))).concat([0]);
+    const idealBurnRate = claimedPoints / numberOfDays;
+    return _.range(numberOfDays - 1).map(i => Math.round(claimedPoints - (idealBurnRate * i))).concat([0]);
+  }
+
+  async realBurndownValues() {
+    const startAt = day(this.data.startAt),
+      finishAt = day(this.data.finishAt),
+      claimedPoints = this.claimedPoints();
+    const numberOfDays = finishAt.diff(startAt, 'd');
     const {results: claimedStories} = await this.findAllUserStories();
     const dates = _.range(numberOfDays).map(i => startAt.add(i, 'd'));
     const remainingPoints = dates.map(date => {
@@ -53,8 +60,12 @@ class Sprint {
         return completedAtDay.isSame(date, 'day') || completedAtDay.isBefore(date, 'day');
       });
       return claimedPoints - candidateStories.reduce((acc, story) => acc + story.points(), 0);
-    })
-    return {ideal: idealBurn, remaining: remainingPoints};
+    });
+    return remainingPoints;
+  }
+
+  async burndown() {
+    return {ideal: this.idealBurndownValues(), remaining: await this.realBurndownValues()};
   }
 
   async findUserStoryById(UserStoryId) {

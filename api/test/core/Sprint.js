@@ -1,6 +1,8 @@
 'use strict';
-const expect = require('expect'),
+const _ = require('lodash'),
+  expect = require('expect'),
   simple = require('simple-mock'),
+  day = require('dayjs'),
   models = require('../../db/models'),
   UserStory = require('../../core/UserStory'),
   Sprint = require('../../core/Sprint');
@@ -133,7 +135,53 @@ describe('Sprint', () => {
         expect(models.Sprint.increment.lastCall.args[1]).toEqual({where: {id: SprintId}, by: 5});
       });
     });
-    describe('burndownValues', () => {});
+    describe('idealBurndownValues', () => {
+      it('always ends with a final value of zero', () => {
+        sprint = new Sprint({startAt: day().toJSON(), finishAt: day().add(2, 'w').toJSON()});
+        simple.mock(sprint, 'claimedPoints').returnWith(10);
+        expect(_.last(sprint.idealBurndownValues())).toBe(0);
+      });
+      it('always begins with the total claimed value of points', () => {
+        sprint = new Sprint({startAt: day(), finishAt: day().add(2, 'w')});
+        simple.mock(sprint, 'claimedPoints').returnWith(10);
+        expect(_.first(sprint.idealBurndownValues())).toBe(10);
+      });
+    });
+    describe('realBurndownValues', () => {
+      it('returns expected values', async () => {
+        sprint = new Sprint({startAt: day().toJSON(), finishAt: day().add(2, 'w').toJSON()});
+        simple.mock(sprint, 'claimedPoints').returnWith(14);
+        simple.mock(sprint, 'findAllUserStories').resolveWith({results: _.range(14).map(i => ({
+          completedAt: () => day().add(i, 'd').toJSON(),
+          points: () => 1,
+        }))});
+        expect(await sprint.realBurndownValues()).toEqual([
+          13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+        ]);
+      });
+      it('handles late completion of a single story', async () => {
+        sprint = new Sprint({startAt: day().toJSON(), finishAt: day().add(2, 'w').toJSON()});
+        simple.mock(sprint, 'claimedPoints').returnWith(14);
+        simple.mock(sprint, 'findAllUserStories').resolveWith({results: [
+          {completedAt: () => day().add(7, 'd').toJSON(), points: () => 7},
+          {completedAt: () => null, points: () => 7},
+        ]});
+        expect(await sprint.realBurndownValues()).toEqual([
+          14, 14, 14, 14, 14, 14, 14, 7, 7, 7, 7, 7, 7, 7
+        ]);
+      });
+      it('returns all the same value when no stories are completed', async () => {
+        sprint = new Sprint({startAt: day().toJSON(), finishAt: day().add(2, 'w').toJSON()});
+        simple.mock(sprint, 'claimedPoints').returnWith(14);
+        simple.mock(sprint, 'findAllUserStories').resolveWith({results: _.range(14).map(() => ({
+          completedAt: () => null,
+          points: () => 1,
+        }))});
+        expect(await sprint.realBurndownValues()).toEqual([
+          14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14
+        ]);
+      });
+    });
     describe('velocity', () => {
       it('returns completedPoints', () => {
         const completedPoints = Math.random();

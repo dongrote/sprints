@@ -40,7 +40,8 @@ class UserStory {
       where: {SprintId},
       include: [models.UserStory],
     });
-    return {count, results: await Promise.all(rows.map(async r => new UserStory(await UserStory.dbrowToJSON(r.UserStory))))};
+    return {count, results: await Promise.all(rows.map(async r => new UserStory(_.assignIn(
+      await UserStory.dbrowToJSON(r.UserStory), {completedAt: r.completedAt}))))};
   }
 
   static async findAllInProject(ProjectId) {
