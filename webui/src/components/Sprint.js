@@ -1,9 +1,21 @@
 import {Button, Card, Grid} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import PointStatistics from './PointStatistics';
+import RelativeTime from 'dayjs/plugin/relativeTime';
 import day from 'dayjs';
+day.extend(RelativeTime);
 
 const dateFormat = 'MMM D, YYYY';
+
+const relativeMidSprintDate = (startAt, finishAt) => {
+  const today = day(),
+    startAtDay = day(startAt),
+    finishAtDay = day(finishAt),
+    sprintLengthInDays = finishAtDay.diff(startAtDay, 'd'),
+    midSprintDate = startAtDay.add(Math.round(sprintLengthInDays / 2), 'd');
+  if (today.isBefore(startAtDay) || today.isAfter(finishAtDay)) return '';
+  return `Mid-Sprint ${midSprintDate.isSame(today, 'd') ? 'today' : midSprintDate.toNow()}.`;
+};
 
 const Sprint = props => (
   <Card fluid>
@@ -24,7 +36,11 @@ const Sprint = props => (
           </Grid.Row>
         </Grid>
       </Card.Header>
-      <Card.Meta content={`${day(props.startDate).format(dateFormat)} - ${day(props.endDate).format(dateFormat)}`} />
+      <Card.Meta>
+        {`${day(props.startDate).format(dateFormat)} - ${day(props.endDate).format(dateFormat)}`}
+        <br />
+        {relativeMidSprintDate(props.startDate, props.endDate)}
+      </Card.Meta>
     </Card.Content>
     <Card.Content extra>
       <PointStatistics
