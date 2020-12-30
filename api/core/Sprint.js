@@ -43,16 +43,6 @@ class Sprint {
       dayCount = finishAt.diff(startAt, 'd');
     return [[0, claimedPoints], [dayCount - 1, 0]];
   }
-  /*
-  idealBurndownValues() {
-    const startAt = day(this.data.startAt),
-      finishAt = day(this.data.finishAt),
-      claimedPoints = this.claimedPoints();
-    const numberOfDays = finishAt.diff(startAt, 'd');
-    const idealBurnRate = claimedPoints / numberOfDays;
-    return _.range(numberOfDays - 1).map(i => Math.round(claimedPoints - (idealBurnRate * i))).concat([0]);
-  }
-  */
 
   async realBurndownValues() {
     const startAt = day(this.data.startAt),

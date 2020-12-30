@@ -16,9 +16,10 @@ const BurndownChart = props => {
       legend: {position: 'top'},
       hAxis: {viewWindow: {min: 0}, title: 'Days', maxAlternation: 1},
       vAxis: {minValue: 0},
+      interpolateNulls: true,
       series: {
-        0: {color: 'orange'},
-        1: {color: 'blue'},
+        0: {color: 'orange', lineDashStyle: [4, 1]},
+        1: {color: 'blue', pointSize: 5},
       },
     }}
   />
