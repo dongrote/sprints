@@ -136,15 +136,14 @@ describe('Sprint', () => {
       });
     });
     describe('idealBurndownValues', () => {
-      it('always ends with a final value of zero', () => {
-        sprint = new Sprint({startAt: day().toJSON(), finishAt: day().add(2, 'w').toJSON()});
+      it('returns expected values', () => {
+        sprint = new Sprint({
+          startAt: day().startOf('d').toJSON(),
+          finishAt: day().startOf('d').add(14, 'd').toJSON()});
         simple.mock(sprint, 'claimedPoints').returnWith(10);
-        expect(_.last(sprint.idealBurndownValues())).toBe(0);
-      });
-      it('always begins with the total claimed value of points', () => {
-        sprint = new Sprint({startAt: day(), finishAt: day().add(2, 'w')});
-        simple.mock(sprint, 'claimedPoints').returnWith(10);
-        expect(_.first(sprint.idealBurndownValues())).toBe(10);
+        expect(sprint.idealBurndownValues()).toEqual([
+          [0, 10], [13, 0],
+        ]);
       });
     });
     describe('realBurndownValues', () => {
