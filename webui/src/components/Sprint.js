@@ -8,13 +8,14 @@ day.extend(RelativeTime);
 const dateFormat = 'MMM D, YYYY';
 
 const relativeMidSprintDate = (startAt, finishAt) => {
-  const today = day(),
-    startAtDay = day(startAt),
-    finishAtDay = day(finishAt),
+  const today = day().startOf('d'),
+    startAtDay = day(startAt).startOf('d'),
+    finishAtDay = day(finishAt).startOf('d'),
     sprintLengthInDays = finishAtDay.diff(startAtDay, 'd'),
     midSprintDate = startAtDay.add(Math.round(sprintLengthInDays / 2), 'd');
   if (today.isBefore(startAtDay) || today.isAfter(finishAtDay)) return '';
-  return `Mid-Sprint ${midSprintDate.isSame(today, 'd') ? 'today' : midSprintDate.toNow()}.`;
+  if (midSprintDate.isSame(today, 'd')) return 'Mid-Sprint is today.';
+  return midSprintDate.isBefore(today, 'd') ? `Mid-Sprint was ${midSprintDate.from(today)}.` : `Mid-Sprint is ${midSprintDate.to(today)}.`;
 };
 
 const Sprint = props => (
