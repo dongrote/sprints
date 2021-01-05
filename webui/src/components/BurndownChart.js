@@ -17,7 +17,7 @@ const BurndownChart = props => {
     options={{
       animation: {startup: true, duration: 100, easing: 'in'},
       legend: {position: 'top'},
-      hAxis: {viewWindow: {min: 0}, title: 'Days', maxAlternation: 2},
+      hAxis: {viewWindow: {min: 0}, maxAlternation: 2},
       vAxis: {minValue: 0},
       interpolateNulls: true,
       series: {

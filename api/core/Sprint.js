@@ -41,7 +41,7 @@ class Sprint {
       finishAt = day(this.data.finishAt).startOf('d'),
       claimedPoints = this.claimedPoints(),
       dayCount = finishAt.diff(startAt, 'd');
-    return [[0, claimedPoints], [dayCount - 1, 0]];
+    return [[0, claimedPoints], [dayCount, 0]];
   }
 
   async realBurndownValues() {
@@ -50,7 +50,7 @@ class Sprint {
       claimedPoints = this.claimedPoints();
     const numberOfDays = finishAt.diff(startAt, 'd');
     const {results: claimedStories} = await this.findAllUserStories();
-    const dates = _.range(numberOfDays).map(i => startAt.add(i, 'd'));
+    const dates = _.range(numberOfDays + 1).map(i => startAt.add(i, 'd'));
     const remainingPoints = dates.map(date => {
       const candidateStories = _.filter(claimedStories, story => {
         const completedAt = story.completedAt();
