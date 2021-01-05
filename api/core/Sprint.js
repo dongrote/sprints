@@ -36,9 +36,9 @@ class Sprint {
 
   velocity() { return this.data.completedPoints; }
 
-  lengthInDays() { return day(this.data.finishAt).diff(day(this.data.startAt), 'd'); }
+  lengthInDays() { return day(this.data.finishAt).diff(day(this.data.startAt), 'd') + 1; }
 
-  idealBurndownValues() { return [[0, this.claimedPoints()], [this.lengthInDays(), 0]]; }
+  idealBurndownValues() { return [[0, this.claimedPoints()], [this.lengthInDays() - 1, 0]]; }
 
   sprintDates() { return _.range(this.lengthInDays()).map(i => day(this.data.startAt).add(i, 'd').format('YYYY-MM-DD')); }
 
