@@ -15,7 +15,7 @@ const relativeMidSprintDate = (startAt, finishAt) => {
     midSprintDate = startAtDay.add(Math.round(sprintLengthInDays / 2), 'd');
   if (today.isBefore(startAtDay) || today.isAfter(finishAtDay)) return '';
   if (midSprintDate.isSame(today, 'd')) return 'Mid-Sprint is today.';
-  return midSprintDate.isBefore(today, 'd') ? `Mid-Sprint was ${midSprintDate.from(today)}.` : `Mid-Sprint is ${midSprintDate.to(today)}.`;
+  return `Mid-Sprint ${midSprintDate.isBefore(today, 'd') ? 'was' : 'is'} ${midSprintDate.from(today)}`;
 };
 
 const Sprint = props => (
