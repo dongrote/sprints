@@ -158,7 +158,11 @@ class SprintView extends Component {
         </Grid.Row>
         <Grid.Row columns={1}>
           <Grid.Column>
-            <BurndownChart ideal={this.state.idealBurndown} real={this.state.realBurndown} />
+            <BurndownChart
+              startDate={this.state.start}
+              ideal={this.state.idealBurndown}
+              real={this.state.realBurndown}
+            />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>

@@ -138,8 +138,8 @@ describe('Sprint', () => {
     describe('idealBurndownValues', () => {
       it('returns expected values', () => {
         sprint = new Sprint({
-          startAt: day().startOf('d').toJSON(),
-          finishAt: day().startOf('d').add(14, 'd').toJSON()});
+          startAt: day('2021-01-01').startOf('d').toJSON(),
+          finishAt: day('2021-01-14').startOf('d').toJSON()});
         simple.mock(sprint, 'claimedPoints').returnWith(10);
         expect(sprint.idealBurndownValues()).toEqual([
           [0, 10], [13, 0],
@@ -148,10 +148,10 @@ describe('Sprint', () => {
     });
     describe('realBurndownValues', () => {
       it('returns expected values', async () => {
-        sprint = new Sprint({startAt: day().toJSON(), finishAt: day().add(2, 'w').toJSON()});
+        sprint = new Sprint({startAt: day('2021-01-01').toJSON(), finishAt: day('2021-01-14').toJSON()});
         simple.mock(sprint, 'claimedPoints').returnWith(14);
         simple.mock(sprint, 'findAllUserStories').resolveWith({results: _.range(14).map(i => ({
-          completedAt: () => day().add(i, 'd').toJSON(),
+          completedAt: () => day('2021-01-01').add(i, 'd').toJSON(),
           points: () => 1,
         }))});
         expect(await sprint.realBurndownValues()).toEqual([
@@ -159,10 +159,10 @@ describe('Sprint', () => {
         ]);
       });
       it('handles late completion of a single story', async () => {
-        sprint = new Sprint({startAt: day().toJSON(), finishAt: day().add(2, 'w').toJSON()});
+        sprint = new Sprint({startAt: day('2021-01-01').toJSON(), finishAt: day('2021-01-14').toJSON()});
         simple.mock(sprint, 'claimedPoints').returnWith(14);
         simple.mock(sprint, 'findAllUserStories').resolveWith({results: [
-          {completedAt: () => day().add(7, 'd').toJSON(), points: () => 7},
+          {completedAt: () => day('2021-01-01').add(7, 'd').toJSON(), points: () => 7},
           {completedAt: () => null, points: () => 7},
         ]});
         expect(await sprint.realBurndownValues()).toEqual([
@@ -170,7 +170,7 @@ describe('Sprint', () => {
         ]);
       });
       it('returns all the same value when no stories are completed', async () => {
-        sprint = new Sprint({startAt: day().toJSON(), finishAt: day().add(2, 'w').toJSON()});
+        sprint = new Sprint({startAt: day('2021-01-01').toJSON(), finishAt: day('2021-01-14').toJSON()});
         simple.mock(sprint, 'claimedPoints').returnWith(14);
         simple.mock(sprint, 'findAllUserStories').resolveWith({results: _.range(14).map(() => ({
           completedAt: () => null,
