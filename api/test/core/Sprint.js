@@ -138,11 +138,11 @@ describe('Sprint', () => {
     describe('idealBurndownValues', () => {
       it('returns expected values', () => {
         sprint = new Sprint({
-          startAt: day().startOf('d').toJSON(),
-          finishAt: day().startOf('d').add(14, 'd').toJSON()});
+          startAt: day('2021-01-01').startOf('d').toJSON(),
+          finishAt: day('2021-01-14').startOf('d').toJSON()});
         simple.mock(sprint, 'claimedPoints').returnWith(10);
         expect(sprint.idealBurndownValues()).toEqual([
-          [0, 10], [14, 0],
+          [0, 10], [13, 0],
         ]);
       });
     });
