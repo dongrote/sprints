@@ -36,29 +36,25 @@ class Sprint {
 
   velocity() { return this.data.completedPoints; }
 
-  idealBurndownValues() {
-    const startAt = day(this.data.startAt).startOf('d'),
-      finishAt = day(this.data.finishAt).startOf('d'),
-      claimedPoints = this.claimedPoints(),
-      dayCount = finishAt.diff(startAt, 'd');
-    return [[0, claimedPoints], [dayCount, 0]];
-  }
+  lengthInDays() { return day(this.data.finishAt).diff(day(this.data.startAt), 'd'); }
+
+  idealBurndownValues() { return [[0, this.claimedPoints()], [this.lengthInDays(), 0]]; }
+
+  sprintDates() { return _.range(this.lengthInDays()).map(i => day(this.data.startAt).add(i, 'd').format('YYYY-MM-DD')); }
 
   async realBurndownValues() {
-    const startAt = day(this.data.startAt),
-      finishAt = day(this.data.finishAt),
-      claimedPoints = this.claimedPoints();
-    const numberOfDays = finishAt.diff(startAt, 'd');
     const {results: claimedStories} = await this.findAllUserStories();
-    const dates = _.range(numberOfDays + 1).map(i => startAt.add(i, 'd'));
+    const dates = this.sprintDates(),
+      completedStoriesByDate = {};
+    dates.forEach(date => { completedStoriesByDate[date] = []; });
+    claimedStories.forEach(story => {
+      const completedAt = story.completedAt();
+      if (completedAt) completedStoriesByDate[day(completedAt).format('YYYY-MM-DD')].push(story);
+    });
+    let completedPoints = 0;
     const remainingPoints = dates.map(date => {
-      const candidateStories = _.filter(claimedStories, story => {
-        const completedAt = story.completedAt();
-        if (!completedAt) return false;
-        const completedAtDay = day(completedAt);
-        return completedAtDay.isSame(date, 'day') || completedAtDay.isBefore(date, 'day');
-      });
-      return claimedPoints - candidateStories.reduce((acc, story) => acc + story.points(), 0);
+      completedPoints = _.reduce(completedStoriesByDate[date], (acc, story) => acc + story.points(), completedPoints);
+      return this.claimedPoints() - completedPoints;
     });
     return remainingPoints;
   }

@@ -142,7 +142,7 @@ describe('Sprint', () => {
           finishAt: day().startOf('d').add(14, 'd').toJSON()});
         simple.mock(sprint, 'claimedPoints').returnWith(10);
         expect(sprint.idealBurndownValues()).toEqual([
-          [0, 10], [13, 0],
+          [0, 10], [14, 0],
         ]);
       });
     });
