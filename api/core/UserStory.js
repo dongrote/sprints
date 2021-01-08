@@ -79,7 +79,7 @@ class UserStory {
 
   async changePointsValue(points) {
     const delta = points - this.points();
-    const sprintIds = _.map(await models.UserStoryClaim.findAll({
+    const sprintIds = _.map(await models.UserStoryClaims.findAll({
       where: {UserStoryId: this.id()},
       attributes: ['SprintId'],
     }), row => row.SprintId);
