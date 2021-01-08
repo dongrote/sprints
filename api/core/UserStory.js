@@ -87,6 +87,7 @@ class UserStory {
     if (this.completedAt()) {
       await models.Sprint.increment('completedPoints', {by: delta, where: {id: this.data.closingSprintId}});
     }
+    await models.UserStory.increment('points', {by: delta, where: {id: this.id()}});
   }
 }
 
