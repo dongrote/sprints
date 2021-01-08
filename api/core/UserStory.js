@@ -76,6 +76,19 @@ class UserStory {
   async update(values) {
     await models.UserStory.update(values, {where: {id: this.id()}});
   }
+
+  async changePointsValue(points) {
+    const delta = points - this.points();
+    const sprintIds = _.map(await models.UserStoryClaims.findAll({
+      where: {UserStoryId: this.id()},
+      attributes: ['SprintId'],
+    }), row => row.SprintId);
+    await models.Sprint.increment('claimedPoints', {by: delta, where: {id: sprintIds}});
+    if (this.completedAt()) {
+      await models.Sprint.increment('completedPoints', {by: delta, where: {id: this.data.closingSprintId}});
+    }
+    await models.UserStory.increment('points', {by: delta, where: {id: this.id()}});
+  }
 }
 
 exports = module.exports = UserStory;

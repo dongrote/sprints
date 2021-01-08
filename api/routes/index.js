@@ -155,6 +155,18 @@ exports.get('/stories/:UserStoryId', async (req, res, next) => {
     next(err);
   }
 });
+exports.patch('/stories/:UserStoryId/points', async (req, res, next) => {
+  const {value} = req.body;
+  if (isNaN(value)) return setImmediate(new HttpError(400, `invalid value: '${value}'`));
+  try {
+    const story = await core.UserStory.findById(Number(req.params.UserStoryId));
+    if (story === null) throw new HttpError(404);
+    await story.changePointsValue(value);
+    res.sendStatus(204);
+  } catch (err) {
+    return next(err);
+  }
+});
 exports.patch('/stories/:UserStoryId', (req, res, next) => setImmediate(next, new HttpError(501)));
 /*
 exports.patch('/stories/:UserStoryId', async (req, res, next) => {
