@@ -50,8 +50,8 @@ export enum SprintTransactionAction {
 
 export interface ISprintTransaction {
   id: number;
-  sprintId: number;
-  storyId: number;
+  SprintId: number;
+  StoryId: number;
   action: SprintTransactionAction;
   points: number;
   ts: Date;

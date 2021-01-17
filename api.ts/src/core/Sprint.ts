@@ -72,23 +72,11 @@ export default class Sprint implements ISprint {
   }
 
   async claimedPoints(): Promise<number> {
-    return _.reduce(await SprintTransaction.findAllInSprint(this.id), (acc, transaction): number => {
-      if (transaction.action === SprintTransactionAction.Claim) return acc + transaction.points;
-      if (transaction.action === SprintTransactionAction.Remit) return acc - transaction.points;
-      return acc;
-    }, 0);
+    return this.points.claimed;
   }
 
   velocity(): number {
     return this.points.completed;
-  }
-
-  async findAllStories(options?: PaginationOptions): Promise<{count: number, results: Story[]}> {
-    return {count: 0, results: []};
-  }
-
-  async findAllAvailableStories(options?: PaginationOptions): Promise<{count: number, results: Story[]}> {
-    return {count: 0, results: []};
   }
 
   async claimStory(StoryId: number, options?: ClaimStoryOptions): Promise<void> {

@@ -1,11 +1,11 @@
-import {ISprint, ISprintTransaction, SprintTransactionAction, PaginationOptions, ISprintTransactionCreate} from './types';
+import {ISprintTransaction, SprintTransactionAction, PaginationOptions, ISprintTransactionCreate} from './types';
 import _ from 'lodash';
 import models from '../db/models';
 
 class SprintTransaction implements ISprintTransaction {
   id: number;
-  sprintId: number;
-  storyId: number;
+  SprintId: number;
+  StoryId: number;
   action: SprintTransactionAction;
   ts: Date;
   points: number;
@@ -21,15 +21,15 @@ class SprintTransaction implements ISprintTransaction {
   }
 
   static async findAllInSprint(SprintId: number, options?: PaginationOptions) {
-    const opts = _.assignIn({where: {SprintId}}, _.pick(options, ['offset', 'limit']));
+    const opts = _.assignIn({where: {SprintId}, include: [models.Story]}, _.pick(options, ['offset', 'limit']));
     const {count, rows} = await models.SprintTransaction.findAndCountAll(opts);
     return {count, results: rows.map(r => new SprintTransaction(r.toJSON()))};
   }
 
   constructor(data) {
     this.id = data.id;
-    this.sprintId = data.SprintId;
-    this.storyId = data.StoryId;
+    this.SprintId = data.SprintId;
+    this.StoryId = data.StoryId;
     this.action = data.action;
     this.points = data.points;
     this.ts = new Date(data.createdAt);
