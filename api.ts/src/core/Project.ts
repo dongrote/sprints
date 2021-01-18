@@ -10,9 +10,9 @@ export class ProjectNameExistsError extends Error {
 }
 
 export default class Project implements IProject {
-  id;
-  name;
-  description;
+  id: number;
+  name: string;
+  description?: string;
   static async findAll(options?: PaginationOptions): Promise<{count: number, results: Project[]}> {
     const opt = {order: [['name']], offset: _.get(options, 'offset', 0), limit: undefined};
     if (_.has(options, 'limit')) opt.limit = options.limit;
@@ -40,7 +40,7 @@ export default class Project implements IProject {
   toJSON() {
     return {id: this.id, name: this.name, description: this.description};
   }
-  async velocity() {
+  async velocity(): Promise<number[]> {
     const {results: sprints} = await Sprint.findAllInProject(this.id);
     return sprints.map(s => s.velocity());
   }

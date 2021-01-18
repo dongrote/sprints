@@ -12,29 +12,25 @@ class ProjectView extends Component {
   async loadProject(ProjectId) {
     const res = await fetch(`/api/projects/${ProjectId}`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({project: json});
+      this.setState({project: await res.json()});
     }
   }
   async loadUserStories(ProjectId) {
-    const res = await fetch(`/api/projects/${ProjectId}/stories`);
+    const res = await fetch(`/api/stories?ProjectId=${ProjectId}`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({userStories: json.results});
+      this.setState({userStories: await res.json()});
     }
   }
   async loadSprints(ProjectId) {
-    const res = await fetch(`/api/projects/${ProjectId}/sprints`);
+    const res = await fetch(`/api/sprints?ProjectId=${ProjectId}`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({sprints: json.results});
+      this.setState({sprints: await res.json()});
     }
   }
   async loadVelocityValues(ProjectId) {
     const res = await fetch(`/api/projects/${ProjectId}/velocity`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({velocity: json});
+      this.setState({velocity: await res.json()});
     }
   }
   async componentDidMount() {

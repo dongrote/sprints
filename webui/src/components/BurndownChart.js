@@ -1,19 +1,18 @@
 import { Chart } from 'react-google-charts';
-import day from 'dayjs';
 
 const BurndownChart = props => {
-  const startDay = day(props.startDate),
-    dailyPoints = [], xAxisLabels = [];
-  props.real.forEach((remainingPoints, idx) => {
-    const idealPoint = props.ideal.find(val => val[0] === idx);
-    xAxisLabels.push(startDay.add(idx, 'd').format('M/D'));
-    dailyPoints.push({remaining: remainingPoints, ideal: idealPoint === undefined ? null : idealPoint[1]});
+  const dailyPoints = [];
+  props.real.forEach((remaining, idx) => {
+    let ideal = null;
+    if (idx === 0) ideal = props.ideal[0];
+    if (idx === props.real.length - 1) ideal = 0;
+    dailyPoints.push({ideal, remaining});
   });
   return (
   <Chart
     chartType='LineChart'
     loader={<div>Loading Data ...</div>}
-    data={[['Day', 'Ideal', 'Real']].concat(dailyPoints.map((dp,i) => ([xAxisLabels[i], dp.ideal, dp.remaining])))}
+    data={[['Day', 'Ideal', 'Real']].concat(dailyPoints.map((dp,i) => ([props.labels[i], dp.ideal, dp.remaining])))}
     options={{
       animation: {startup: true, duration: 100, easing: 'in'},
       legend: {position: 'top'},

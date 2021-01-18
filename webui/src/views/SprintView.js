@@ -18,20 +18,27 @@ class SprintView extends Component {
     completedPoints: 0,
     claimedPoints: 0,
     remainingPoints: 0,
+    burndownLabels: [],
+    burndownIdealValues: [],
+    burndownRealValues: [],
     idealBurndown: [],
     realBurndown: [],
   };
   async remitUserStory(SprintId, UserStoryId) {
-    const res = await fetch(`/api/sprints/${SprintId}/stories/${UserStoryId}`, {method: 'DELETE'});
+    const res = await fetch(`/api/sprints/${SprintId}/transactions`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({StoryId: UserStoryId, action: 'UNCLAIM'}),
+    });
     if (res.ok) {
       this.setState({stories: this.state.stories.filter(story => story.id !== UserStoryId)});
     }
   }
   async completeUserStory(SprintId, UserStoryId) {
-    const res = await fetch(`/api/sprints/${SprintId}/complete`, {
+    const res = await fetch(`/api/sprints/${SprintId}/transactions`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({UserStoryId})
+      body: JSON.stringify({StoryId: UserStoryId, action: 'COMPLETE'}),
     });
     if (res.ok) {
       const updated = this.state.stories.map(story => {
@@ -51,26 +58,26 @@ class SprintView extends Component {
         sprint: json.title,
         start: json.startAt,
         finish: json.finishAt,
-        predictedPoints: json.predictedPoints,
-        completedPoints: json.completedPoints,
-        claimedPoints: json.claimedPoints,
-        remainingPoints: json.claimedPoints - json.completedPoints,
+        predictedPoints: json.points.predicted,
+        completedPoints: json.points.completed,
+        claimedPoints: json.points.claimed,
+        remainingPoints: json.points.remaining,
         description: json.description,
       });
     }
   }
   async loadStories(SprintId) {
-    const res = await fetch(`/api/sprints/${SprintId}/stories`);
+    const res = await fetch(`/api/stories?SprintId=${SprintId}`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({stories: json.results});
+      const stories = await res.json();
+      this.setState({stories});
     }
   }
   async loadBurndown(SprintId) {
     const res = await fetch(`/api/sprints/${SprintId}/burndown`);
     if (res.ok) {
       const json = await res.json();
-      this.setState({idealBurndown: json.ideal, realBurndown: json.remaining});
+      this.setState({burndownLabels: json.labels, burndownIdealValues: json.idealValues, burndownRealValues: json.realValues});
     }
   }
   async componentDidMount() {
@@ -159,9 +166,9 @@ class SprintView extends Component {
         <Grid.Row columns={1}>
           <Grid.Column>
             <BurndownChart
-              startDate={this.state.start}
-              ideal={this.state.idealBurndown}
-              real={this.state.realBurndown}
+              labels={this.state.burndownLabels}
+              ideal={this.state.burndownIdealValues}
+              real={this.state.burndownRealValues}
             />
           </Grid.Column>
         </Grid.Row>

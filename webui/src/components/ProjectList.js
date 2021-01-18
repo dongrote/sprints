@@ -13,8 +13,7 @@ class ProjectList extends Component {
     return [];
   }
   async componentDidMount() {
-    const projects = await this.fetchProjects();
-    this.setState({projects});
+    this.setState({projects: await this.fetchProjects()});
   }
   render() {
     return (
