@@ -30,9 +30,7 @@ class SprintView extends Component {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({StoryId: UserStoryId, action: 'UNCLAIM'}),
     });
-    if (res.ok) {
-      this.setState({stories: this.state.stories.filter(story => story.id !== UserStoryId)});
-    }
+    if (res.ok) await this.refreshView();
   }
   async completeUserStory(SprintId, UserStoryId) {
     const res = await fetch(`/api/sprints/${SprintId}/transactions`, {
@@ -40,24 +38,18 @@ class SprintView extends Component {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({StoryId: UserStoryId, action: 'COMPLETE'}),
     });
-    if (res.ok) {
-      const updated = this.state.stories.map(story => {
-        story.status = story.id === UserStoryId ? 'DONE' : story.status;
-        return story;
-      });
-      this.setState({stories: updated});
-    }
+    if (res.ok) await this.refreshView();
   }
   async loadSprint(SprintId) {
     const res = await fetch(`/api/sprints/${SprintId}`);
     if (res.ok) {
       const json = await res.json();
       this.setState({
-        project: json.Project.name,
+        // project: json.Project.name,
         ProjectId: json.ProjectId,
-        sprint: json.title,
+        sprint: json.name,
         start: json.startAt,
-        finish: json.finishAt,
+        finish: json.endAt,
         predictedPoints: json.points.predicted,
         completedPoints: json.points.completed,
         claimedPoints: json.points.claimed,
@@ -69,23 +61,29 @@ class SprintView extends Component {
   async loadStories(SprintId) {
     const res = await fetch(`/api/stories?SprintId=${SprintId}`);
     if (res.ok) {
-      const stories = await res.json();
-      this.setState({stories});
+      this.setState({stories: await res.json()});
     }
   }
   async loadBurndown(SprintId) {
     const res = await fetch(`/api/sprints/${SprintId}/burndown`);
     if (res.ok) {
       const json = await res.json();
-      this.setState({burndownLabels: json.labels, burndownIdealValues: json.idealValues, burndownRealValues: json.realValues});
+      this.setState({
+        burndownLabels: json.labels,
+        burndownIdealValues: json.idealValues,
+        burndownRealValues: json.realValues,
+      });
     }
   }
-  async componentDidMount() {
+  async refreshView() {
     await Promise.all([
       this.loadSprint(this.props.SprintId),
       this.loadStories(this.props.SprintId),
       this.loadBurndown(this.props.SprintId),
     ]);
+  }
+  async componentDidMount() {
+    await this.refreshView();
   }
   render() {
     return (
@@ -195,7 +193,7 @@ class SprintView extends Component {
                   <UserStoryColumn
                     color='orange'
                     header='Claimed'
-                    userStories={this.state.stories.filter(story => story.status === 'CLAIM')}
+                    userStories={this.state.stories.filter(story => story.completedAt === null)}
                     onRemit={UserStoryId => this.remitUserStory(this.props.SprintId, UserStoryId)}
                     onComplete={UserStoryId => this.completeUserStory(this.props.SprintId, UserStoryId)}
                   />
@@ -204,7 +202,7 @@ class SprintView extends Component {
                   <UserStoryColumn
                     color='blue'
                     header='Done'
-                    userStories={this.state.stories.filter(story => story.status === 'DONE')}
+                    userStories={this.state.stories.filter(story => story.completedAt !== null)}
                   />
                 </Grid.Column>
               </Grid.Row>

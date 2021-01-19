@@ -42,13 +42,14 @@ class NewSprintView extends Component {
   }
   async onCreate() {
     const body = {
+      ProjectId: this.props.ProjectId,
       name: this.state.name,
-      start: this.state.start,
-      finish: this.state.finish,
+      startAt: this.state.start,
+      endAt: this.state.finish,
       points: this.state.points,
     };
     if (this.state.description) body.description = this.state.description;
-    const res = await fetch(`/api/projects/${this.props.ProjectId}/sprints`, {
+    const res = await fetch(`/api/sprints`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body)

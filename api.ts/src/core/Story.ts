@@ -40,8 +40,8 @@ class Story {
       models.Sprint.findByPk(SprintId, {attributes: ['ProjectId']})
     ]);
     const claimedStoryIds = _.map(claimedStories, 'id');
-    const where = {ProjectId};
-    if (_.size(claimedStoryIds)) where[Op.not] = {id: claimedStoryIds};
+    const where = {ProjectId, completedAt: null};
+    if (_.size(claimedStoryIds)) where['id'] = {[Op.not]: claimedStoryIds};
     const stories = await models.Story.findAll({where});
     return _.map(stories, story => new Story(story.toJSON()));
   }

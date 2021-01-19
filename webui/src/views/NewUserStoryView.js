@@ -35,11 +35,12 @@ class NewUserStoryView extends Component {
   }
   async onCreate() {
     const body = {
-      story: this.state.story,
+      ProjectId: this.props.ProjectId,
+      title: this.state.story,
       points: this.state.points,
     };
     if (this.state.description) body.description = this.state.description;
-    const res = await fetch(`/api/projects/${this.props.ProjectId}/stories`, {
+    const res = await fetch(`/api/stories`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body)

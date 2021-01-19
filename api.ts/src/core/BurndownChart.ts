@@ -25,7 +25,7 @@ class BurndownChart {
       endAtDay = dayjs(sprint.endAt).startOf('d'),
       values = [];
     for (let points = 0, dayCursor = startAtDay; dayCursor.isBefore(endAtDay, 'd') || dayCursor.isSame(endAtDay, 'd'); dayCursor = dayCursor.add(1, 'd')) {
-      points = _.reduce(transactions, (acc, transaction): number => {
+      points = _.reduce(transactions.results, (acc, transaction): number => {
         if (dayCursor.isSame(dayjs(transaction.ts).startOf('d'), 'd')) {
           if (transaction.action === SprintTransactionAction.Claim) return acc + transaction.points;
           if (transaction.action === SprintTransactionAction.Complete) return acc - transaction.points;
