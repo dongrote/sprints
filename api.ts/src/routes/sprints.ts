@@ -10,8 +10,13 @@ const router = Router();
 
 router.get('/', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const ProjectId = Number(req.query.ProjectId);
+  const options = {
+      offset: Number(_.get(req.query, 'offset', 0)),
+      reverse: _.has(req.query, 'reverse'),
+    };
+  if (_.has(req.query, 'limit')) options['limit'] = Number(req.query.limit);
   try {
-    res.json(isNaN(ProjectId) ? await Sprint.findAll() : await Sprint.findAllInProject(ProjectId));
+    res.json(isNaN(ProjectId) ? await Sprint.findAll(options) : await Sprint.findAllInProject(ProjectId, options));
   } catch (err) {
     return next(err);
   }

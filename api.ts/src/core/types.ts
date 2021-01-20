@@ -12,6 +12,7 @@ export interface PaginationOptions {
   offset?: number;
   limit?: number;
   sort?: SortOptions;
+  reverse?: boolean;
 }
 
 export interface IProject {

@@ -15,12 +15,18 @@ export default class Sprint implements ISprint {
   endAt: Date;
 
   static async findAll(options?: PaginationOptions): Promise<{count: number, results: Sprint[]}> {
-    const {count, rows} = await models.Sprint.findAndCountAll(_.pick(options, ['offset', 'limit']));
+    const opts = _.assignIn({order: [['startAt', _.get(options, 'reverse', false) ? 'DESC' : 'ASC']]}, _.pick(options, ['offset', 'limit']));
+    const {count, rows} = await models.Sprint.findAndCountAll(opts);
     return {count, results: rows.map(r => new Sprint(r.toJSON()))};
   }
 
   static async findAllInProject(ProjectId: number, options?: PaginationOptions): Promise<{count: number, results: Sprint[]}> {
-    const {count, rows} = await models.Sprint.findAndCountAll(_.assignIn({where: {ProjectId}}, _.pick(options, ['offset', 'limit'])));
+    const {count, rows} = await models.Sprint
+      .findAndCountAll(
+        _.assignIn({
+          where: {ProjectId},
+          order: [['startAt', _.get(options, 'reverse', false) ? 'DESC' : 'ASC']],
+        }, _.pick(options, ['offset', 'limit'])));
     return {count, results: rows.map(r => new Sprint(r.toJSON()))};
   }
 

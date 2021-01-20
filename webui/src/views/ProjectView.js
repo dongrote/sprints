@@ -22,10 +22,9 @@ class ProjectView extends Component {
     }
   }
   async loadSprints(ProjectId) {
-    const res = await fetch(`/api/sprints?ProjectId=${ProjectId}`);
+    const res = await fetch(`/api/sprints?ProjectId=${ProjectId}&reverse`);
     if (res.ok) {
       const {results: sprints} = await res.json();
-      sprints.reverse();
       this.setState({sprints});
     }
   }

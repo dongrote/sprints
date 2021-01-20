@@ -7,6 +7,7 @@ import UserStoryColumn from '../components/UserStoryColumn';
 
 class SprintView extends Component {
   state = {
+    sprintLoaded: false,
     project: '',
     ProjectId: null,
     sprint: '',
@@ -55,6 +56,7 @@ class SprintView extends Component {
         claimedPoints: json.points.claimed,
         remainingPoints: json.points.remaining,
         description: json.description,
+        sprintLoaded: true,
       });
     }
   }
@@ -163,16 +165,7 @@ class SprintView extends Component {
         </Grid.Row>
         <Grid.Row columns={1}>
           <Grid.Column>
-            <BurndownChart
-              labels={this.state.burndownLabels}
-              ideal={this.state.burndownIdealValues}
-              real={this.state.burndownRealValues}
-            />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row columns={1}>
-          <Grid.Column>
-            <Sprint
+            {this.state.sprintLoaded && <Sprint
               SprintId={this.props.SprintId}
               title={this.state.sprint}
               startDate={this.state.start}
@@ -182,6 +175,15 @@ class SprintView extends Component {
               completedPoints={this.state.completedPoints}
               remainingPoints={this.state.remainingPoints}
               description={this.state.description}
+            />}
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={1}>
+          <Grid.Column>
+            <BurndownChart
+              labels={this.state.burndownLabels}
+              ideal={this.state.burndownIdealValues}
+              real={this.state.burndownRealValues}
             />
           </Grid.Column>
         </Grid.Row>
