@@ -6,6 +6,7 @@ class SprintTransaction implements ISprintTransaction {
   id: number;
   SprintId: number;
   StoryId: number;
+  Story;
   action: SprintTransactionAction;
   ts: Date;
   points: number;
@@ -21,7 +22,11 @@ class SprintTransaction implements ISprintTransaction {
   }
 
   static async findAllInSprint(SprintId: number, options?: PaginationOptions) {
-    const opts = _.assignIn({where: {SprintId}, include: [models.Story]}, _.pick(options, ['offset', 'limit']));
+    const opts = _.assignIn({
+      where: {SprintId},
+      include: [models.Story],
+      order: [['createdAt', _.get(options, 'reverse', false) ? 'DESC' : 'ASC']],
+    }, _.pick(options, ['offset', 'limit']));
     const {count, rows} = await models.SprintTransaction.findAndCountAll(opts);
     return {count, results: rows.map(r => new SprintTransaction(r.toJSON()))};
   }
@@ -30,6 +35,7 @@ class SprintTransaction implements ISprintTransaction {
     this.id = data.id;
     this.SprintId = data.SprintId;
     this.StoryId = data.StoryId;
+    this.Story = data.Story;
     this.action = data.action;
     this.points = data.points;
     this.ts = new Date(data.createdAt);

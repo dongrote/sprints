@@ -58,9 +58,11 @@ router.get('/:id/burndown', async (req: Request, res: Response, next: NextFuncti
 });
 router.get('/:id/transactions', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const SprintId = Number(req.params.id);
+  const options = {offset: Number(_.get(req.query, 'offset', 0)), reverse: _.has(req.query, 'reverse')};
+  if (_.has(req.query, 'limit')) options['limit'] = Number(req.query.limit);
   try {
     if (isNaN(SprintId)) throw new HttpError(400, `invalid SprintId: '${req.params.id}'`);
-    res.json(await SprintTransaction.findAllInSprint(SprintId));
+    res.json(await SprintTransaction.findAllInSprint(SprintId, options));
   } catch (err) {
     return next(err);
   }

@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { Button, Grid, Header, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import Sprint from '../components/Sprint';
+import SprintFeed from '../components/SprintFeed';
 import BurndownChart from '../components/BurndownChart';
 import UserStoryColumn from '../components/UserStoryColumn';
 
@@ -185,6 +186,11 @@ class SprintView extends Component {
               ideal={this.state.burndownIdealValues}
               real={this.state.burndownRealValues}
             />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={1}>
+          <Grid.Column>
+            <SprintFeed SprintId={this.props.SprintId} />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>
