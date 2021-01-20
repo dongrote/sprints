@@ -9,6 +9,7 @@ const actionIcons = {
 };
 
 const actionColors = {
+  CLAIM: 'orange',
   UNCLAIM: 'red',
   COMPLETE: 'blue',
 };
@@ -45,6 +46,7 @@ class SprintFeed extends Component {
               </Feed.Date>
               <Feed.Summary>
                 {transaction.action === 'CLAIM' && `Claimed '${transaction.Story.title}'`}
+                {transaction.action === 'UNCLAIM' && `Unclaimed '${transaction.Story.title}'`}
                 {transaction.action === 'COMPLETE' && `Completed '${transaction.Story.title}'`}
               </Feed.Summary>
               <Feed.Meta>
