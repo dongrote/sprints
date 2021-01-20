@@ -62,8 +62,8 @@ class Sprint extends Component {
           </Card.Meta>
         </Card.Content>
         <Card.Content extra>
-          <Grid columns={2}>
-            <Grid.Row>
+          <Grid>
+            <Grid.Row only='tablet computer' columns={2}>
               <Grid.Column width={12}>
                 <PointStatistics
                   predicted={this.props.predictedPoints}
@@ -73,7 +73,28 @@ class Sprint extends Component {
                 />
               </Grid.Column>
               <Grid.Column verticalAlign='middle' width={4}>
-                <BurndownSparkline values={this.state.burndownValues} max={this.props.claimedPoints}/>
+                <BurndownSparkline
+                  values={this.state.burndownValues}
+                  max={this.props.claimedPoints}
+                />
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row only='mobile' columns={1}>
+              <Grid.Column>
+                <PointStatistics
+                  predicted={this.props.predictedPoints}
+                  allocated={this.props.claimedPoints}
+                  completed={this.props.completedPoints}
+                  remaining={this.props.remainingPoints}
+                />
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row centered only='mobile'>
+              <Grid.Column width={8}>
+                <BurndownSparkline
+                  values={this.state.burndownValues}
+                  max={this.props.claimedPoints}
+                />
               </Grid.Column>
             </Grid.Row>
           </Grid>
