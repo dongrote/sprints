@@ -9,7 +9,7 @@ day.extend(RelativeTime);
 
 const dateFormat = 'MMM D, YYYY';
 
-const relativeMidSprintDate = (startAt, finishAt) => {
+const countdownString = (startAt, finishAt) => {
   const today = day().startOf('d'),
     startAtDay = day(startAt).startOf('d'),
     finishAtDay = day(finishAt).startOf('d'),
@@ -17,11 +17,11 @@ const relativeMidSprintDate = (startAt, finishAt) => {
     midSprintDate = startAtDay.add(Math.round(sprintLengthInDays / 2), 'd');
   if (today.isBefore(startAtDay) || today.isAfter(finishAtDay)) return '';
   if (midSprintDate.isSame(today, 'd')) return 'Mid-Sprint is today.';
-  return `Mid-Sprint ${midSprintDate.isBefore(today, 'd') ? 'was' : 'is'} ${midSprintDate.from(today)}`;
+  return (midSprintDate.isBefore(today, 'd')) ? `End of sprint ${finishAtDay.from(today)}.` : `Mid-Sprint ${midSprintDate.from(today)}.`;
 };
 
 class Sprint extends Component {
-  state = {burndownValues: [], midSprintCountdown: ''};
+  state = {burndownValues: [], countdownString: ''};
   async refreshBurndownSparkline() {
     const res = await fetch(`/api/sprints/${this.props.SprintId}/burndown`);
     if (res.ok) {
@@ -29,12 +29,12 @@ class Sprint extends Component {
       this.setState({burndownValues});
     }
   }
-  refreshRelativeMidSprintCountdown() {
-    this.setState({midSprintCountdown: relativeMidSprintDate(this.props.startDate, this.props.endDate)});
-    setTimeout(() => this.refreshRelativeMidSprintCountdown(), 3600000);
+  refreshRelativeCountdown() {
+    this.setState({countdownString: countdownString(this.props.startDate, this.props.endDate)});
+    setTimeout(() => this.refreshRelativeCountdown(), 3600000);
   }
   async componentDidMount() {
-    this.refreshRelativeMidSprintCountdown();
+    this.refreshRelativeCountdown();
     await this.refreshBurndownSparkline();
   }
   render() {
@@ -57,8 +57,8 @@ class Sprint extends Component {
           </Card.Header>
           <Card.Meta>
             {`${day(this.props.startDate).format(dateFormat)} - ${day(this.props.endDate).format(dateFormat)}`}
-            {this.state.midSprintCountdown && <br />}
-            {this.state.midSprintCountdown}
+            {this.state.countdownString && <br />}
+            {this.state.countdownString}
           </Card.Meta>
         </Card.Content>
         <Card.Content extra>
