@@ -2,11 +2,13 @@ import { Component } from 'react';
 import { Button, Grid, Header, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import Sprint from '../components/Sprint';
+import SprintFeed from '../components/SprintFeed';
 import BurndownChart from '../components/BurndownChart';
 import UserStoryColumn from '../components/UserStoryColumn';
 
 class SprintView extends Component {
   state = {
+    sprintLoaded: false,
     project: '',
     ProjectId: null,
     sprint: '',
@@ -18,67 +20,73 @@ class SprintView extends Component {
     completedPoints: 0,
     claimedPoints: 0,
     remainingPoints: 0,
+    burndownLabels: [],
+    burndownIdealValues: [],
+    burndownRealValues: [],
     idealBurndown: [],
     realBurndown: [],
   };
   async remitUserStory(SprintId, UserStoryId) {
-    const res = await fetch(`/api/sprints/${SprintId}/stories/${UserStoryId}`, {method: 'DELETE'});
-    if (res.ok) {
-      this.setState({stories: this.state.stories.filter(story => story.id !== UserStoryId)});
-    }
-  }
-  async completeUserStory(SprintId, UserStoryId) {
-    const res = await fetch(`/api/sprints/${SprintId}/complete`, {
+    const res = await fetch(`/api/sprints/${SprintId}/transactions`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({UserStoryId})
+      body: JSON.stringify({StoryId: UserStoryId, action: 'UNCLAIM'}),
     });
-    if (res.ok) {
-      const updated = this.state.stories.map(story => {
-        story.status = story.id === UserStoryId ? 'DONE' : story.status;
-        return story;
-      });
-      this.setState({stories: updated});
-    }
+    if (res.ok) await this.refreshView();
+  }
+  async completeUserStory(SprintId, UserStoryId) {
+    const res = await fetch(`/api/sprints/${SprintId}/transactions`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({StoryId: UserStoryId, action: 'COMPLETE'}),
+    });
+    if (res.ok) await this.refreshView();
   }
   async loadSprint(SprintId) {
     const res = await fetch(`/api/sprints/${SprintId}`);
     if (res.ok) {
       const json = await res.json();
       this.setState({
-        project: json.Project.name,
+        // project: json.Project.name,
         ProjectId: json.ProjectId,
-        sprint: json.title,
+        sprint: json.name,
         start: json.startAt,
-        finish: json.finishAt,
-        predictedPoints: json.predictedPoints,
-        completedPoints: json.completedPoints,
-        claimedPoints: json.claimedPoints,
-        remainingPoints: json.claimedPoints - json.completedPoints,
+        finish: json.endAt,
+        predictedPoints: json.points.predicted,
+        completedPoints: json.points.completed,
+        claimedPoints: json.points.claimed,
+        remainingPoints: json.points.remaining,
         description: json.description,
+        sprintLoaded: true,
       });
     }
   }
   async loadStories(SprintId) {
-    const res = await fetch(`/api/sprints/${SprintId}/stories`);
+    const res = await fetch(`/api/stories?SprintId=${SprintId}`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({stories: json.results});
+      this.setState({stories: await res.json()});
     }
   }
   async loadBurndown(SprintId) {
     const res = await fetch(`/api/sprints/${SprintId}/burndown`);
     if (res.ok) {
       const json = await res.json();
-      this.setState({idealBurndown: json.ideal, realBurndown: json.remaining});
+      this.setState({
+        burndownLabels: json.labels,
+        burndownIdealValues: json.idealValues,
+        burndownRealValues: json.realValues,
+      });
     }
   }
-  async componentDidMount() {
+  async refreshView() {
     await Promise.all([
       this.loadSprint(this.props.SprintId),
       this.loadStories(this.props.SprintId),
       this.loadBurndown(this.props.SprintId),
     ]);
+  }
+  async componentDidMount() {
+    await this.refreshView();
   }
   render() {
     return (
@@ -158,16 +166,7 @@ class SprintView extends Component {
         </Grid.Row>
         <Grid.Row columns={1}>
           <Grid.Column>
-            <BurndownChart
-              startDate={this.state.start}
-              ideal={this.state.idealBurndown}
-              real={this.state.realBurndown}
-            />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row columns={1}>
-          <Grid.Column>
-            <Sprint
+            {this.state.sprintLoaded && <Sprint
               SprintId={this.props.SprintId}
               title={this.state.sprint}
               startDate={this.state.start}
@@ -177,7 +176,21 @@ class SprintView extends Component {
               completedPoints={this.state.completedPoints}
               remainingPoints={this.state.remainingPoints}
               description={this.state.description}
+            />}
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={1}>
+          <Grid.Column>
+            <BurndownChart
+              labels={this.state.burndownLabels}
+              ideal={this.state.burndownIdealValues}
+              real={this.state.burndownRealValues}
             />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={1}>
+          <Grid.Column>
+            <SprintFeed SprintId={this.props.SprintId} />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>
@@ -188,7 +201,7 @@ class SprintView extends Component {
                   <UserStoryColumn
                     color='orange'
                     header='Claimed'
-                    userStories={this.state.stories.filter(story => story.status === 'CLAIM')}
+                    userStories={this.state.stories.filter(story => story.completedAt === null)}
                     onRemit={UserStoryId => this.remitUserStory(this.props.SprintId, UserStoryId)}
                     onComplete={UserStoryId => this.completeUserStory(this.props.SprintId, UserStoryId)}
                   />
@@ -197,7 +210,7 @@ class SprintView extends Component {
                   <UserStoryColumn
                     color='blue'
                     header='Done'
-                    userStories={this.state.stories.filter(story => story.status === 'DONE')}
+                    userStories={this.state.stories.filter(story => story.completedAt !== null)}
                   />
                 </Grid.Column>
               </Grid.Row>

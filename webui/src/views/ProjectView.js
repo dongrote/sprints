@@ -12,29 +12,26 @@ class ProjectView extends Component {
   async loadProject(ProjectId) {
     const res = await fetch(`/api/projects/${ProjectId}`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({project: json});
+      this.setState({project: await res.json()});
     }
   }
   async loadUserStories(ProjectId) {
-    const res = await fetch(`/api/projects/${ProjectId}/stories`);
+    const res = await fetch(`/api/stories?ProjectId=${ProjectId}`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({userStories: json.results});
+      this.setState({userStories: await res.json()});
     }
   }
   async loadSprints(ProjectId) {
-    const res = await fetch(`/api/projects/${ProjectId}/sprints`);
+    const res = await fetch(`/api/sprints?ProjectId=${ProjectId}&reverse`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({sprints: json.results});
+      const {results: sprints} = await res.json();
+      this.setState({sprints});
     }
   }
   async loadVelocityValues(ProjectId) {
     const res = await fetch(`/api/projects/${ProjectId}/velocity`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({velocity: json});
+      this.setState({velocity: await res.json()});
     }
   }
   async componentDidMount() {
@@ -82,13 +79,13 @@ class ProjectView extends Component {
               <Sprint
                 key={i}
                 SprintId={sprint.id}
-                title={sprint.title}
+                title={sprint.name}
                 startDate={sprint.startAt}
-                endDate={sprint.finishAt}
-                claimedPoints={sprint.claimedPoints}
-                predictedPoints={sprint.predictedPoints}
-                completedPoints={sprint.completedPoints}
-                remainingPoints={sprint.claimedPoints - sprint.completedPoints}
+                endDate={sprint.endAt}
+                claimedPoints={sprint.points.claimed}
+                predictedPoints={sprint.points.predicted}
+                completedPoints={sprint.points.completed}
+                remainingPoints={sprint.points.remaining}
               />
               </Link>
             ))}
@@ -105,31 +102,22 @@ class ProjectView extends Component {
             buttonContent='New User Story'
             buttonLinkTo={`/project/${this.props.ProjectId}/stories`}
           >
-            <Grid stackable columns={3}>
+            <Grid stackable columns={2}>
               <Grid.Row>
                 <Grid.Column>
                   <UserStoryColumn
                     color='green'
                     header='Ready'
-                    userStories={this.state.userStories.filter(s => s.status === 'READY')}
-                    onPromote={story => alert(`promote ${story}`)}
-                  />
-                </Grid.Column>
-                <Grid.Column>
-                  <UserStoryColumn
-                    color='orange'
-                    header='Claimed'
-                    userStories={this.state.userStories.filter(s => s.status === 'CLAIM')}
-                    onDemote={story => alert(`demote ${story}`)}
-                    onPromote={story => alert(`promote ${story}`)}
+                    userStories={this.state.userStories.filter(s => s.completedAt === null)}
                   />
                 </Grid.Column>
                 <Grid.Column>
                   <UserStoryColumn
                     color='blue'
                     header='Done'
-                    userStories={this.state.userStories.filter(s => s.status === 'DONE')}
+                    userStories={this.state.userStories.filter(s => s.completedAt !== null)}
                     onDemote={story => alert(`demote ${story}`)}
+                    onPromote={story => alert(`promote ${story}`)}
                   />
                 </Grid.Column>
               </Grid.Row>

@@ -22,7 +22,7 @@ const UserStoryColumn = props => {
               onComplete={props.onComplete}
               title={story.title}
               points={story.points}
-              status={story.status}
+              completedAt={story.completedAt}
               description={story.description}
             />
           </Table.Cell>

@@ -1,5 +1,7 @@
+import { Component } from 'react';
 import {Button, Card, Grid} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import BurndownSparkline from './BurndownSparkline';
 import PointStatistics from './PointStatistics';
 import RelativeTime from 'dayjs/plugin/relativeTime';
 import day from 'dayjs';
@@ -18,43 +20,91 @@ const relativeMidSprintDate = (startAt, finishAt) => {
   return `Mid-Sprint ${midSprintDate.isBefore(today, 'd') ? 'was' : 'is'} ${midSprintDate.from(today)}`;
 };
 
-const Sprint = props => (
-  <Card fluid>
-    <Card.Content>
-      <Card.Header>
-        <Grid columns={2}>
-          <Grid.Row>
-            <Grid.Column>{props.title}</Grid.Column>
-            <Grid.Column textAlign='right'>
-              <Button.Group>
-                <Link to={`/sprint/${props.SprintId}/edit`}>
-                  <Button basic icon='edit outline' />
-                </Link>
-                <Button basic icon='chart line' />
-                <Button basic icon='ellipsis horizontal' />
-              </Button.Group>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Card.Header>
-      <Card.Meta>
-        {`${day(props.startDate).format(dateFormat)} - ${day(props.endDate).format(dateFormat)}`}
-        <br />
-        {relativeMidSprintDate(props.startDate, props.endDate)}
-      </Card.Meta>
-    </Card.Content>
-    <Card.Content extra>
-      <PointStatistics
-        predicted={props.predictedPoints}
-        allocated={props.claimedPoints}
-        completed={props.completedPoints}
-        remaining={props.remainingPoints}
-      />
-    </Card.Content>
-    {props.description && <Card.Content extra>
-      <pre>{props.description}</pre>
-    </Card.Content>}
-  </Card>
-);
+class Sprint extends Component {
+  state = {burndownValues: [], midSprintCountdown: ''};
+  async refreshBurndownSparkline() {
+    const res = await fetch(`/api/sprints/${this.props.SprintId}/burndown`);
+    if (res.ok) {
+      const {realValues: burndownValues} = await res.json();
+      this.setState({burndownValues});
+    }
+  }
+  refreshRelativeMidSprintCountdown() {
+    this.setState({midSprintCountdown: relativeMidSprintDate(this.props.startDate, this.props.endDate)});
+    setTimeout(() => this.refreshRelativeMidSprintCountdown(), 3600000);
+  }
+  async componentDidMount() {
+    this.refreshRelativeMidSprintCountdown();
+    await this.refreshBurndownSparkline();
+  }
+  render() {
+    return (
+      <Card fluid>
+        <Card.Content>
+          <Card.Header>
+            <Grid columns={2}>
+              <Grid.Row>
+                <Grid.Column>{this.props.title}</Grid.Column>
+                <Grid.Column textAlign='right'>
+                  <Button.Group>
+                    <Link to={`/sprint/${this.props.SprintId}/edit`}>
+                      <Button basic icon='edit outline' />
+                    </Link>
+                  </Button.Group>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Card.Header>
+          <Card.Meta>
+            {`${day(this.props.startDate).format(dateFormat)} - ${day(this.props.endDate).format(dateFormat)}`}
+            {this.state.midSprintCountdown && <br />}
+            {this.state.midSprintCountdown}
+          </Card.Meta>
+        </Card.Content>
+        <Card.Content extra>
+          <Grid>
+            <Grid.Row only='tablet computer' columns={2}>
+              <Grid.Column width={12}>
+                <PointStatistics
+                  predicted={this.props.predictedPoints}
+                  allocated={this.props.claimedPoints}
+                  completed={this.props.completedPoints}
+                  remaining={this.props.remainingPoints}
+                />
+              </Grid.Column>
+              <Grid.Column verticalAlign='middle' width={4}>
+                <BurndownSparkline
+                  values={this.state.burndownValues}
+                  max={this.props.claimedPoints}
+                />
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row only='mobile' columns={1}>
+              <Grid.Column>
+                <PointStatistics
+                  predicted={this.props.predictedPoints}
+                  allocated={this.props.claimedPoints}
+                  completed={this.props.completedPoints}
+                  remaining={this.props.remainingPoints}
+                />
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row centered only='mobile'>
+              <Grid.Column width={8}>
+                <BurndownSparkline
+                  values={this.state.burndownValues}
+                  max={this.props.claimedPoints}
+                />
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Card.Content>
+        {this.props.description && <Card.Content extra>
+          <pre>{this.props.description}</pre>
+        </Card.Content>}
+      </Card>
+    );
+  }
+}
 
 export default Sprint;

@@ -6,18 +6,18 @@ import UserStoryColumn from '../components/UserStoryColumn';
 class ClaimUserStoryView extends Component {
   state = {available: [], redirect: false};
   async claimStory(UserStoryId) {
-    await fetch(`/api/sprints/${this.props.SprintId}/claim`, {
+    const body = {action: 'CLAIM', StoryId: UserStoryId};
+    await fetch(`/api/sprints/${this.props.SprintId}/transactions`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({UserStoryId})
+      body: JSON.stringify(body),
     });
     this.goBack();
   }
   async loadAvailableStories(SprintId) {
-    const res = await fetch(`/api/sprints/${SprintId}/available`);
+    const res = await fetch(`/api/stories?SprintId=${SprintId}&available`);
     if (res.ok) {
-      const json = await res.json();
-      this.setState({available: json.results});
+      this.setState({available: await res.json()});
     }
   }
   async componentDidMount() {

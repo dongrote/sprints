@@ -33,7 +33,7 @@ const UserStory = props => (
               {props.onRemit && <Button color='red' content='Remit' onClick={() => props.onRemit(props.UserStoryId)} />}
               {props.onComplete && <Button color='blue' content='Complete' onClick={() => props.onComplete(props.UserStoryId)} />}
             </Button.Group>
-            {!(props.onClaim || props.onRemit) && <StatusLabel status={props.status} />}
+            {!(props.onClaim || props.onRemit) && <StatusLabel status={props.completedAt ? 'DONE' : 'READY'} />}
           </Grid.Column>
         </Grid.Row>
       </Grid>

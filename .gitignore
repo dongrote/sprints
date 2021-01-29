@@ -105,3 +105,9 @@ dist
 
 # api/public directory
 api/public
+
+# SQLite3 database file
+db.sqlite
+
+# nohup output
+nohup.out

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2018", "ESNext", "DOM"],
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": false,
+    "allowJs": true,
+    "target": "ES2018",
+    "esModuleInterop": true,
+    "sourceMap": true
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./src/types.ts"]
+}
