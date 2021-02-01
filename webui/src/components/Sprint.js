@@ -17,7 +17,7 @@ const countdownString = (startAt, finishAt) => {
     midSprintDate = startAtDay.add(Math.round(sprintLengthInDays / 2), 'd');
   if (today.isBefore(startAtDay) || today.isAfter(finishAtDay)) return '';
   if (midSprintDate.isSame(today, 'd')) return 'Mid-Sprint is today.';
-  return (midSprintDate.isBefore(today, 'd')) ? `End of sprint ${finishAtDay.from(today)}.` : `Mid-Sprint ${midSprintDate.from(today)}.`;
+  return (midSprintDate.isBefore(today, 'd')) ? `End of sprint ${finishAtDay.add(1, 'd').from(today)}.` : `Mid-Sprint ${midSprintDate.from(today)}.`;
 };
 
 class Sprint extends Component {
