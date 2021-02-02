@@ -6,7 +6,7 @@ const VelocityChart = props => {
     <Chart
       chartType='ComboChart'
       loader={<div>Loading Data ...</div>}
-      data={[['Sprint', 'Velocity', {role: 'certainty'}, `Average Velocity (${mean})`]].concat(props.velocities.map((v,i) => ([`${i}`, v, i < (props.velocities.length - 1), mean])))}
+      data={[['Sprint', 'Velocity', {role: 'tooltip'}, {role: 'certainty'}, `Average Velocity (${mean})`, {role: 'tooltip'}]].concat(props.velocities.map((v,i) => ([`${i + 1}`, v, `${v} Points`, i < (props.velocities.length - 1), mean, `${mean} Average Points`])))}
       options={{
         animation: {startup: true, duration: 200, easing: 'in'},
         title: 'Project Velocity',
