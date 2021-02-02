@@ -1,7 +1,7 @@
 import { Chart } from 'react-google-charts';
 
 const VelocityChart = props => {
-  const mean = props.velocities.length ? props.velocities.reduce((acc, val) => acc + val) / props.velocities.length : 0;
+  const mean = (props.velocities.length - 1) > 0 ? Math.round(props.velocities.slice(0, -1).reduce((acc, val) => acc + val) / (props.velocities.length - 1)) : 0;
   return (
     <Chart
       chartType='ComboChart'
