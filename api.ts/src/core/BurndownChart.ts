@@ -15,7 +15,7 @@ class BurndownChart {
   async labels(): Promise<string[]> {
     const sprint = await Sprint.findById(this.#SprintId);
     const dates = await sprint.sprintDays();
-    return dates.map(d => dayjs(d).format('MM/DD'));
+    return dates.map(d => dayjs(d).format('MM/DD/YYYY'));
   }
   async realValues(): Promise<number[]> {
     const [sprint, transactions] = await Promise.all([
