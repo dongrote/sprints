@@ -5,6 +5,8 @@ import Sprint from '../components/Sprint';
 import SprintFeed from '../components/SprintFeed';
 import BurndownChart from '../components/BurndownChart';
 import UserStoryColumn from '../components/UserStoryColumn';
+import NewStoryButton from '../components/NewStoryButton';
+import ClaimStoryButton from '../components/ClaimStoryButton';
 
 class SprintView extends Component {
   state = {
@@ -128,40 +130,12 @@ class SprintView extends Component {
             </Grid>
           </Grid.Column>
         </Grid.Row>
-        <Grid.Row columns={2}>
+        <Grid.Row>
           <Grid.Column>
             <Header as='h2'>
               <Icon name='forward'/>
               <Header.Content>{this.state.sprint}</Header.Content>
             </Header>
-          </Grid.Column>
-          <Grid.Column textAlign='right' verticalAlign='middle'>
-            <Grid columns={1}>
-              <Grid.Row only='mobile'>
-                <Grid.Column>
-                  <Link to={`/sprint/${this.props.SprintId}/claim`}>
-                    <Button
-                      color='orange'
-                      icon='plus'
-                      labelPosition='left'
-                      content='Claim'
-                    />
-                  </Link>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row only='tablet computer'>
-                <Grid.Column>
-                  <Link to={`/sprint/${this.props.SprintId}/claim`}>
-                    <Button
-                      color='orange'
-                      icon='plus'
-                      labelPosition='left'
-                      content='Claim User Story'
-                    />
-                  </Link>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>
@@ -191,6 +165,14 @@ class SprintView extends Component {
         <Grid.Row columns={1}>
           <Grid.Column>
             <SprintFeed SprintId={this.props.SprintId} />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row divided columns={2}>
+          <Grid.Column textAlign='right'>
+            <NewStoryButton ProjectId={this.state.ProjectId} />
+          </Grid.Column>
+          <Grid.Column>
+            <ClaimStoryButton SprintId={this.props.SprintId} />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>

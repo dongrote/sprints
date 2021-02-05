@@ -5,6 +5,8 @@ import ProjectViewRow from '../components/ProjectViewRow';
 import UserStoryColumn from '../components/UserStoryColumn';
 import Sprint from '../components/Sprint';
 import VelocityChart from '../components/VelocityChart';
+import NewSprintButton from '../components/NewSprintButton';
+import NewStoryButton from '../components/NewStoryButton';
 
 
 class ProjectView extends Component {
@@ -64,16 +66,17 @@ class ProjectView extends Component {
             <VelocityChart velocities={this.state.velocity} />
           </Grid.Column>
         </Grid.Row>
+        <Grid.Row divided columns={2}>
+          <Grid.Column textAlign='right'>
+            <NewSprintButton ProjectId={this.props.ProjectId} />
+          </Grid.Column>
+          <Grid.Column textAlign='left'>
+            <NewStoryButton ProjectId={this.props.ProjectId} />
+          </Grid.Column>
+        </Grid.Row>
         <Grid.Row>
           <Grid.Column>
-          <ProjectViewRow
-            icon='forward'
-            title='Sprints'
-            buttonColor='blue'
-            buttonIcon='plus'
-            buttonContent='New Sprint'
-            buttonLinkTo={`/project/${this.props.ProjectId}/sprints`}
-          >
+          <ProjectViewRow icon='forward' title='Sprints'>
             {this.state.sprints.map((sprint, i) => (
               <Link key={i} to={`/sprint/${sprint.id}`}>
               <Sprint
@@ -94,14 +97,7 @@ class ProjectView extends Component {
         </Grid.Row>
         <Grid.Row>
           <Grid.Column>
-          <ProjectViewRow
-            icon='tasks'
-            title={`User Stories (${this.state.userStories.length})`}
-            buttonColor='green'
-            buttonIcon='plus'
-            buttonContent='New User Story'
-            buttonLinkTo={`/project/${this.props.ProjectId}/stories`}
-          >
+          <ProjectViewRow icon='tasks' title={`User Stories (${this.state.userStories.length})`}>
             <Grid stackable columns={2}>
               <Grid.Row>
                 <Grid.Column>
