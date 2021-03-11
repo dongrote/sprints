@@ -25,7 +25,7 @@ class Sprint extends Component {
   async refreshBurndownSparkline() {
     const res = await fetch(`/api/sprints/${this.props.SprintId}/burndown`);
     if (res.ok) {
-      const {realValues: burndownValues} = await res.json();
+      const {realValues: {net: burndownValues}} = await res.json();
       this.setState({burndownValues});
     }
   }

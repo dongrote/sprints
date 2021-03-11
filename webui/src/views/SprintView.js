@@ -24,7 +24,9 @@ class SprintView extends Component {
     remainingPoints: 0,
     burndownLabels: [],
     burndownIdealValues: [],
-    burndownRealValues: [],
+    burndownRealNetValues: [],
+    burndownRealIncrementValues: [],
+    burndownRealDecrementValues: [],
     idealBurndown: [],
     realBurndown: [],
   };
@@ -76,7 +78,9 @@ class SprintView extends Component {
       this.setState({
         burndownLabels: json.labels,
         burndownIdealValues: json.idealValues,
-        burndownRealValues: json.realValues,
+        burndownRealNetValues: json.realValues.net,
+        burndownRealIncrementValues: json.realValues.inc,
+        burndownRealDecrementValues: json.realValues.dec,
       });
     }
   }
@@ -157,14 +161,11 @@ class SprintView extends Component {
           <Grid.Column>
             <BurndownChart
               labels={this.state.burndownLabels}
-              ideal={this.state.burndownIdealValues}
-              real={this.state.burndownRealValues}
+              ideals={this.state.burndownIdealValues}
+              net={this.state.burndownRealNetValues}
+              inc={this.state.burndownRealIncrementValues}
+              dec={this.state.burndownRealDecrementValues}
             />
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row columns={1}>
-          <Grid.Column>
-            <SprintFeed SprintId={this.props.SprintId} />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row divided columns={2}>
@@ -197,6 +198,11 @@ class SprintView extends Component {
                 </Grid.Column>
               </Grid.Row>
             </Grid>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row columns={1}>
+          <Grid.Column>
+            <SprintFeed SprintId={this.props.SprintId} />
           </Grid.Column>
         </Grid.Row>
       </Grid>
