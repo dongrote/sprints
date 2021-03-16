@@ -6,9 +6,12 @@ import httplog from 'morgan';
 import HttpError from 'http-error-constructor';
 import cookieParser from 'cookie-parser';
 import routes from './routes';
+import GoogleUserAuthenticator from './core/Authentication/GoogleUserAuthenticator';
 
 const log = logger('api:app');
 const app = express();
+
+GoogleUserAuthenticator.installOntoPassport();
 
 app.use(httplog('dev'));
 app.use('/', express.static(path.join(__dirname, 'public')));

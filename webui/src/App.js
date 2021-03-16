@@ -9,13 +9,17 @@ import NewUserStoryView from './views/NewUserStoryView';
 import ClaimUserStoryView from './views/ClaimUserStoryView';
 import EditSprintView from './views/EditSprintView';
 import EditUserStoryView from './views/EditUserStoryView';
+import SignInView from './views/SignInView';
 
 class App extends Component {
   render() {
     return (
-      <Container>
+      <Container style={{'margin-top': '0.5em'}}>
         <Switch>
           <Route exact path='/'>
+            <SignInView />
+          </Route>
+          <Route exact path='/projects'>
             <ProjectList />
           </Route>
           <Route

@@ -53,7 +53,7 @@ class ProjectView extends Component {
             <Header as='h1' icon='briefcase' content={this.state.project.name} />
           </Grid.Column>
           <Grid.Column textAlign='right'>
-            <Link to='/'>
+            <Link to='/projects'>
               <Button basic>
                 <Icon name='home' />
                 Home
