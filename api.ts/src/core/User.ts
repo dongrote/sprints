@@ -9,6 +9,7 @@ interface SequelizeUser {
   lastName: string|null;
   displayName: string|null;
   systemRole: string;
+  avatarUrl: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +20,7 @@ export interface DefaultUserValues {
   firstName?: string;
   lastName?: string;
   displayName?: string;
+  avatarUrl?: string;
 }
 
 export default class User {
@@ -29,11 +31,12 @@ export default class User {
   firstName: string|null;
   lastName: string|null;
   displayName: string|null;
+  avatarUrl: string|null;
 
   static async findOrCreateByEmail(email: string, defaults?: DefaultUserValues): Promise<User> {
     const [user] = await models.User.findOrCreate({
       where: {email},
-      defaults: _.pick(defaults, ['identityProvider', 'systemRole', 'firstName', 'lastName', 'displayName']),
+      defaults: _.pick(defaults, ['identityProvider', 'systemRole', 'firstName', 'lastName', 'displayName', 'avatarUrl']),
     });
     return new User(user.toJSON());
   }
@@ -51,5 +54,6 @@ export default class User {
     this.firstName = dbRow.firstName;
     this.lastName = dbRow.lastName;
     this.displayName = dbRow.displayName;
+    this.avatarUrl = dbRow.avatarUrl;
   }
 }

@@ -20,6 +20,7 @@ module.exports = {
       firstName: Sequelize.STRING,
       lastName: Sequelize.STRING,
       displayName: Sequelize.STRING,
+      avatarUrl: Sequelize.STRING,
       systemRole: {
         type: Sequelize.STRING,
         allowNull: false,

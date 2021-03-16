@@ -26,6 +26,7 @@ export default class GoogleUserAuthenticator {
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
         displayName: profile.displayName,
+        avatarUrl: _.get(_.first(profile.photos), 'value'),
       });
       done(null, {tokens: await TokenSet.createForUser(user)});
     } catch (err) {

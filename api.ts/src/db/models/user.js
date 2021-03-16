@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
     displayName: DataTypes.STRING,
+    avatarUrl: DataTypes.STRING,
     systemRole: {
       type: DataTypes.STRING,
       allowNull: false,
