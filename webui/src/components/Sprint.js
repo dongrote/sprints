@@ -89,14 +89,6 @@ class Sprint extends Component {
                 />
               </Grid.Column>
             </Grid.Row>
-            <Grid.Row centered only='mobile'>
-              <Grid.Column width={8}>
-                <BurndownSparkline
-                  values={this.state.burndownValues}
-                  max={this.props.claimedPoints}
-                />
-              </Grid.Column>
-            </Grid.Row>
           </Grid>
         </Card.Content>
         {this.props.description && <Card.Content extra>

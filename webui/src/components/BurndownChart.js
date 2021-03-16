@@ -55,10 +55,10 @@ const BurndownChart = props => (
       isStacked: true,
       interpolateNulls: true,
       series: {
-        0: { type: 'bars', color: 'blue', isStacked: true },
-        1: { type: 'bars', color: 'purple', isStacked: true },
-        2: { type: 'line', color: 'orange', lineDashStyle: [4, 1], pointsVisible: false },
-        3: { type: 'line', color: '#B40F0A', pointSize: 5 },
+        0: { type: 'bars', color: '#96DE9A', isStacked: true },
+        1: { type: 'bars', color: '#D7FDBE', isStacked: true },
+        2: { type: 'line', color: '#E0C15B', lineDashStyle: [4, 1], pointsVisible: false },
+        3: { type: 'line', color: '#A26D3C', pointSize: 5 },
       },
     }}
   />
