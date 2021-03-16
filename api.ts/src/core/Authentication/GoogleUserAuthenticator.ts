@@ -1,21 +1,35 @@
 import passport, { Profile } from 'passport';
-import { Request } from 'express';
 import { OAuth2Strategy as GoogleOAuthStrategy, VerifyFunction } from 'passport-google-oauth';
+import _ from 'lodash';
 import env from '../../env';
+import User from '../User';
+import TokenSet from './TokenSet';
+import DebugLogger from 'debug-logger';
+
+const log = DebugLogger('GoogleUserAuthenticator');
 
 export default class GoogleUserAuthenticator {
-  static installOntoPassport(callbackURL: string): void {
+  static installOntoPassport(): void {
     passport.use('google', new GoogleOAuthStrategy({
-      callbackURL,
+      callbackURL: env.googleCallbackUrl(),
       clientID: env.googleClientId(),
       clientSecret: env.googleClientSecret(),
-      passReqToCallback: true,
     }, GoogleUserAuthenticator.verify));
   }
 
-  static async verify(req: Request, accessToken: string, refreshToken: string, profile: Profile, done: VerifyFunction): Promise<void> {
-    console.log('**** GoogleUserAuthenticator req.headers %j', req.headers);
-    console.log('**** GoogleUserAuthenticator req.body %j', req.body);
-    done(new Error('not implemented'));
+  static async verify(accessToken: string, refreshToken: string, profile: Profile, done: VerifyFunction): Promise<void> {
+    try {
+      log.debug('profile', profile);
+      const user = await User.findOrCreateByEmail(_.get(_.first(profile.emails), 'value'), {
+        identityProvider: 'google',
+        systemRole: 'user',
+        firstName: profile.name.givenName,
+        lastName: profile.name.familyName,
+        displayName: profile.displayName,
+      });
+      done(null, {tokens: await TokenSet.createForUser(user)});
+    } catch (err) {
+      return done(err);
+    }
   }
 }

@@ -17,6 +17,9 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      firstName: Sequelize.STRING,
+      lastName: Sequelize.STRING,
+      displayName: Sequelize.STRING,
       systemRole: {
         type: Sequelize.STRING,
         allowNull: false,

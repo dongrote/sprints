@@ -11,7 +11,7 @@ import GoogleUserAuthenticator from './core/Authentication/GoogleUserAuthenticat
 const log = logger('api:app');
 const app = express();
 
-GoogleUserAuthenticator.installOntoPassport('/api/auth/callbacks/google');
+GoogleUserAuthenticator.installOntoPassport();
 
 app.use(httplog('dev'));
 app.use('/', express.static(path.join(__dirname, 'public')));
