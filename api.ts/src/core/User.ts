@@ -38,8 +38,14 @@ export default class User {
     return new User(user.toJSON());
   }
 
+  static async findById(id: number): Promise<User|null> {
+    const user = await models.User.findByPk(id);
+    return user ? new User(user.toJSON()) : null;
+  }
+
   constructor(dbRow: SequelizeUser) {
     this.id = dbRow.id;
+    this.systemRole = dbRow.systemRole;
     this.email = dbRow.email;
     this.identityProvider = dbRow.identityProvider;
     this.firstName = dbRow.firstName;

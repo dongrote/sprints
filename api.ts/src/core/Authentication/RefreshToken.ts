@@ -30,5 +30,10 @@ export default class RefreshToken {
   }
 
   toString(): string { return this.encoded; }
+
   toJSON(): RefreshTokenPayload { return this.decoded; }
+
+  userId(): number { return this.decoded.userId; }
+
+  async verify(): Promise<void> {}
 }

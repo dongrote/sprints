@@ -31,5 +31,12 @@ export default class AccessToken {
   }
 
   toString(): string { return this.encoded; }
+
   toJSON(): AccessTokenPayload { return this.decoded; }
+
+  userId(): number { return this.decoded.userId; }
+
+  systemRole(): string { return this.decoded.systemRole; }
+
+  async verify(): Promise<void> {}
 }

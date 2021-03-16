@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { Router } from 'express';
-import HttpError from 'http-error-constructor';
 import passport from 'passport';
 import TokenSet from '../core/Authentication/TokenSet';
 
@@ -21,6 +20,10 @@ router.get('/google/callback', passport.initialize(), passport.authenticate('goo
     return next(err)
   }
 });
-router.get('/logout');
+router.get('/logout', (req, res, next) => {
+  res.clearCookie('refreshToken', {httpOnly: true, secure: true});
+  res.clearCookie('accessToken', {httpOnly: true, secure: true});
+  res.redirect('/');
+});
 
 export default router;
