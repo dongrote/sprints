@@ -8,8 +8,7 @@
     "allowJs": true,
     "target": "ES2018",
     "esModuleInterop": true,
-    "sourceMap": true
+    "sourceMap": false
   },
-  "include": ["./src/**/*"],
-  "exclude": ["./src/types.ts"]
+  "include": ["./src/**/*"]
 }
