@@ -20,6 +20,9 @@ export default class GoogleUserAuthenticator {
   static async verify(accessToken: string, refreshToken: string, profile: Profile, done: VerifyFunction): Promise<void> {
     try {
       log.debug('profile', profile);
+      const user = await User.findByEmail(_.get(_.first(profile.emails), 'value'));
+      /*
+       ** Gonna need this mapping later for when I want to implicitly update user profiles upon sign in
       const user = await User.findOrCreateByEmail(_.get(_.first(profile.emails), 'value'), {
         identityProvider: 'google',
         systemRole: 'user',
@@ -28,6 +31,7 @@ export default class GoogleUserAuthenticator {
         displayName: profile.displayName,
         avatarUrl: _.get(_.first(profile.photos), 'value'),
       });
+      */
       done(null, {tokens: await TokenSet.createForUser(user)});
     } catch (err) {
       return done(err);
