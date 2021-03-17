@@ -50,7 +50,6 @@ class SprintView extends Component {
     const res = await fetch(`/api/sprints/${SprintId}`);
     if (res.ok) {
       const json = await res.json();
-      console.log(json);
       this.setState({
         // project: json.Project.name,
         ProjectId: json.ProjectId,

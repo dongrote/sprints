@@ -94,7 +94,6 @@ export default class Group {
 
   async findAllMembers(): Promise<Array<GroupMember>> {
     const bindings = await models.GroupRoleBinding.findAll({where: {GroupId: this.id}, include: [models.User]});
-    console.log('%j', bindings);
     return bindings.map(binding => ({
       GroupId: this.id,
       UserId: binding.UserId,
