@@ -2,10 +2,10 @@ import { Component } from 'react';
 import { Table, Button, Header, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
-class ProjectList extends Component {
-  state = {projects: []};
-  async fetchProjects() {
-    const res = await fetch(`/api/projects?GroupId=${this.props.GroupId}`);
+class GroupsView extends Component {
+  state = {groups: []};
+  async fetchGroups() {
+    const res = await fetch('/api/groups');
     if (res.ok) {
       const json = await res.json();
       return json.results;
@@ -13,29 +13,29 @@ class ProjectList extends Component {
     return [];
   }
   async componentDidMount() {
-    this.setState({projects: await this.fetchProjects()});
+    this.setState({groups: await this.fetchGroups()});
   }
   render() {
     return (
       <Table>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>Projects</Table.HeaderCell>
+          <Table.HeaderCell>Groups</Table.HeaderCell>
           <Table.HeaderCell textAlign='right'>Actions</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>
-      {this.state.projects.map((project, i) => (
+      {this.state.groups.map((group, i) => (
         <Table.Row key={i}>
           <Table.Cell>
             <Header as='h3'>
-              <Icon name='briefcase' />
-              <Header.Content>{project.name}</Header.Content>
+              <Icon name='users' />
+              <Header.Content>{group.name}</Header.Content>
             </Header>
           </Table.Cell>
           <Table.Cell textAlign='right'>
             <Button.Group compact>
-              <Link to={`/project/${project.id}`}>
+              <Link to={`/groups/${group.id}/projects`}>
                 <Button primary>
                   <Icon name='eye' />
                   View
@@ -52,4 +52,4 @@ class ProjectList extends Component {
   }
 }
 
-export default ProjectList;
+export default GroupsView;

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { GroupRoleBinding } from './Group';
 import models from '../db/models';
 
 interface SequelizeUser {
@@ -55,5 +56,14 @@ export default class User {
     this.lastName = dbRow.lastName;
     this.displayName = dbRow.displayName;
     this.avatarUrl = dbRow.avatarUrl;
+  }
+
+  async groupRoleBindings(): Promise<Array<GroupRoleBinding>> {
+    const user = await models.User.findByPk(this.id, {include: models.Group});
+    return user.Groups.map(group => ({
+      GroupId: group.GroupRoleBinding.GroupId,
+      UserId: group.GroupRoleBinding.UserId,
+      role: group.GroupRoleBinding.role,
+    }));
   }
 }

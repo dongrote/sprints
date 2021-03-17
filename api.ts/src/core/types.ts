@@ -1,3 +1,8 @@
+export interface PaginatedResults<T> {
+  count: number;
+  results: Array<T>;
+}
+
 export enum SortDirection {
   ascending = 'ASC',
   descending = 'DESC',

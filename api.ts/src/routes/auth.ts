@@ -15,7 +15,7 @@ router.get('/google/callback', passport.initialize(), passport.authenticate('goo
     const tokenSet: TokenSet = _.get(req.user, 'tokens');
     res.cookie('refreshToken', tokenSet.refreshToken.toString(), {httpOnly: true, secure: true});
     res.cookie('accessToken', tokenSet.accessToken.toString(), {httpOnly: true, secure: true});
-    res.redirect('/#/projects');
+    res.redirect('/#/groups');
   } catch (err) {
     return next(err)
   }
