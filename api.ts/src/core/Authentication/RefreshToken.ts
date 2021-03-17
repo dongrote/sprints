@@ -35,5 +35,9 @@ export default class RefreshToken {
 
   userId(): number { return this.decoded.userId; }
 
-  async verify(): Promise<void> {}
+  async verify(): Promise<void> {
+    await new Promise((resolve: (value: void) => void, reject) => {
+      jsonwebtoken.verify(this.encoded, env.tokenSigningKey(), {algorithms: ['HS256']}, err => err ? reject(err) : resolve());
+    });
+  }
 }

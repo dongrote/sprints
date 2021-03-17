@@ -83,5 +83,9 @@ export default class AccessToken {
     return _.includes(roles, this.groupRole(GroupId));
   }
 
-  async verify(): Promise<void> {}
+  async verify(): Promise<void> {
+    await new Promise((resolve: (value: void) => void, reject) => {
+      jsonwebtoken.verify(this.encoded, env.tokenSigningKey(), {algorithms: ['HS256']}, err => err ? reject(err) : resolve());
+    });
+  }
 }
