@@ -86,7 +86,7 @@ class SprintView extends Component {
   }
   async refreshView() {
     await Promise.all([
-      this.loadSprint(this.props.SprintId);
+      this.loadSprint(this.props.SprintId),
       this.loadStories(this.props.SprintId),
       this.loadBurndown(this.props.SprintId),
     ]);
