@@ -24,6 +24,23 @@ export interface DefaultUserValues {
   avatarUrl?: string;
 }
 
+export class GoogleUserAuthenticatorError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'GoogleUserAuthenticatorError';
+  }
+}
+
+export class UserNotFoundError extends GoogleUserAuthenticatorError {
+  email: string;
+
+  constructor(email) {
+    super(`'${email}' not found.`);
+    this.name = 'UserNotFoundError';
+    this.email = email;
+  }
+}
+
 export default class User {
   id: number;
   systemRole: string;
@@ -40,6 +57,12 @@ export default class User {
       defaults: _.pick(defaults, ['identityProvider', 'systemRole', 'firstName', 'lastName', 'displayName', 'avatarUrl']),
     });
     return new User(user.toJSON());
+  }
+
+  static async findByEmail(email: string): Promise<User> {
+    const row = await models.User.findOne({where: {email}});
+    if (row === null) throw new UserNotFoundError(email);
+    return new User(row.toJSON());
   }
 
   static async findById(id: number): Promise<User|null> {

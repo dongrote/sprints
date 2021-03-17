@@ -1,6 +1,21 @@
 import models from '../db/models';
 import _ from 'lodash';
 import { IStoryCreate, SprintTransactionAction, PaginationOptions } from './types';
+import Project from './Project';
+
+class StoryError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'StoryError';
+  }
+}
+
+class StoryNotFoundError extends StoryError {
+  constructor(StoryId: number) {
+    super(`Story ${StoryId} not found.`);
+    this.name = 'StoryNotFoundError';
+  }
+}
 
 class Story {
   id: number;
@@ -8,6 +23,13 @@ class Story {
   description?: string;
   points: number;
   completedAt?: Date;
+
+  static async findGroupId(StoryId: number): Promise<number> {
+    const row = await models.Story.findByPk(StoryId, {attributes: ['ProjectId']});
+    if (row === null) throw new StoryNotFoundError(StoryId);
+    return await Project.findGroupId(row.ProjectId);
+  }
+
   static async findById(StoryId: number): Promise<null|Story> {
     const dbrow = await models.Story.findByPk(StoryId);
     return dbrow === null ? null : new Story(dbrow.toJSON());

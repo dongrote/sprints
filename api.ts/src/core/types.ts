@@ -20,6 +20,8 @@ export interface PaginationOptions {
   reverse?: boolean;
 }
 
+export type PaginationOptionsWithGroupId = PaginationOptions & {GroupId?: Array<number>|number};
+
 export interface IProject {
   id: number;
   name: string;

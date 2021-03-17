@@ -50,6 +50,7 @@ class SprintView extends Component {
     const res = await fetch(`/api/sprints/${SprintId}`);
     if (res.ok) {
       const json = await res.json();
+      console.log(json);
       this.setState({
         // project: json.Project.name,
         ProjectId: json.ProjectId,
@@ -85,8 +86,8 @@ class SprintView extends Component {
     }
   }
   async refreshView() {
+    await this.loadSprint(this.props.SprintId);
     await Promise.all([
-      this.loadSprint(this.props.SprintId),
       this.loadStories(this.props.SprintId),
       this.loadBurndown(this.props.SprintId),
     ]);

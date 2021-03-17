@@ -1,24 +1,35 @@
 import { Request, Response, NextFunction, Router } from 'express';
+import { RequestWithTokens } from './types';
 import HttpError from 'http-error-constructor';
 import _ from 'lodash';
+import Project from '../core/Project';
+import { GroupRole } from '../core/Group';
 import Story from '../core/Story';
+import Sprint from '../core/Sprint';
 
 const router = Router();
 
-router.get('/', async (req: Request, res: Response, next: NextFunction): Promise<void|Response> => {
+router.get('/', async (req: RequestWithTokens, res: Response, next: NextFunction): Promise<void|Response> => {
   const ProjectId = Number(req.query.ProjectId);
   const SprintId = Number(req.query.SprintId);
   const available = _.has(req.query, 'available');
   try {
-    if (!isNaN(ProjectId)) return res.json(await Story.findAllInProject(ProjectId));
-    if (!isNaN(SprintId)) return res.json(available ? await Story.findAllAvailableForSprint(SprintId) : await Story.findAllInSprint(SprintId));
+    if (!isNaN(ProjectId)) {
+      if (!req.accessToken.belongsToGroupId(await Project.findGroupId(ProjectId))) throw new HttpError(403);
+      return res.json(await Story.findAllInProject(ProjectId));
+    }
+    if (!isNaN(SprintId)) {
+      if (!req.accessToken.belongsToGroupId(await Sprint.findGroupId(SprintId))) throw new HttpError(403);
+      return res.json(available ? await Story.findAllAvailableForSprint(SprintId) : await Story.findAllInSprint(SprintId));
+    }
     throw new HttpError(400, `missing ProjectId or SprintId`);
   } catch (err) {
     return next(err);
   }
 });
-router.post('/', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.post('/', async (req: RequestWithTokens, res: Response, next: NextFunction): Promise<void> => {
   try {
+    if (!req.accessToken.belongsToGroupId(await Project.findGroupId(req.body.ProjectId))) throw new HttpError(403);
     res.json(await Story.createInProject({
       ProjectId: req.body.ProjectId,
       title: req.body.title,
@@ -29,15 +40,16 @@ router.post('/', async (req: Request, res: Response, next: NextFunction): Promis
     return next(err);
   }
 });
-router.get('/:id', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.get('/:id', async (req: RequestWithTokens, res: Response, next: NextFunction): Promise<void> => {
   const StoryId = Number(req.params.id);
   try {
     if (isNaN(StoryId)) throw new HttpError(400, `invalid StoryId: '${req.params.id}'`);
+    if (!req.accessToken.belongsToGroupId(await Story.findGroupId(StoryId))) throw new HttpError(403);
     res.json(await Story.findById(StoryId));
   } catch (err) {
     return next(err);
   }
 });
-router.patch('/:id');
+router.patch('/:id', (req, res, next) => next(new HttpError(501)));
 
 export default router;

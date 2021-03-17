@@ -20,5 +20,7 @@ export default class TokenSet {
     await Promise.all([this.refreshToken.verify(), this.accessToken.verify()]);
   }
 
-  async refreshAccessToken(): Promise<void> {}
+  async refreshAccessToken(): Promise<void> {
+    this.accessToken = await AccessToken.createForUser(await User.findById(this.accessToken.userId()));
+  }
 }

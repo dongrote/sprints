@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import { Table, Button, Header, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import GroupMemberList from '../components/GroupMemberList';
 
 class GroupsView extends Component {
-  state = {groups: []};
+  state = {groups: [], members: {}};
   async fetchGroups() {
     const res = await fetch('/api/groups');
     if (res.ok) {
@@ -32,8 +33,9 @@ class GroupsView extends Component {
               <Icon name='users' />
               <Header.Content>{group.name}</Header.Content>
             </Header>
+            <GroupMemberList GroupId={group.id} />
           </Table.Cell>
-          <Table.Cell textAlign='right'>
+          <Table.Cell textAlign='right' verticalAlign='top'>
             <Button.Group compact>
               <Link to={`/groups/${group.id}/projects`}>
                 <Button primary>
