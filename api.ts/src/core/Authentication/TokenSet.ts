@@ -1,6 +1,7 @@
 import User from '../User';
 import RefreshToken from './RefreshToken';
 import AccessToken from './AccessToken';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 export default class TokenSet {
   refreshToken: RefreshToken;
@@ -17,7 +18,16 @@ export default class TokenSet {
   }
 
   async verify(): Promise<void> {
-    await Promise.all([this.refreshToken.verify(), this.accessToken.verify()]);
+    await this.refreshToken.verify();
+    try {
+      await this.accessToken.verify();
+    } catch (err) {
+      if (err instanceof TokenExpiredError) {
+        await this.refreshAccessToken();
+      } else {
+        throw err;
+      }
+    }
   }
 
   async refreshAccessToken(): Promise<void> {

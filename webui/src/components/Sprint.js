@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import {Button, Card, Grid} from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import BurndownSparkline from './BurndownSparkline';
 import PointStatistics from './PointStatistics';
 import RelativeTime from 'dayjs/plugin/relativeTime';
@@ -21,13 +21,14 @@ const countdownString = (startAt, finishAt) => {
 };
 
 class Sprint extends Component {
-  state = {burndownValues: [], countdownString: ''};
+  state = {unauth: false, burndownValues: [], countdownString: ''};
   async refreshBurndownSparkline() {
     const res = await fetch(`/api/sprints/${this.props.SprintId}/burndown`);
     if (res.ok) {
       const {realValues: {net: burndownValues}} = await res.json();
       this.setState({burndownValues});
     }
+    if (res.status === 401) this.setState({unauth: true});
   }
   refreshRelativeCountdown() {
     this.setState({countdownString: countdownString(this.props.startDate, this.props.endDate)});
@@ -38,6 +39,7 @@ class Sprint extends Component {
     await this.refreshBurndownSparkline();
   }
   render() {
+    if (this.state.unauth) return <Redirect to='/' />;
     return (
       <Card fluid>
         <Card.Content>

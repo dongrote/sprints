@@ -89,4 +89,9 @@ export default class User {
       role: group.GroupRoleBinding.role,
     }));
   }
+
+  async updateProfile(values: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'avatarUrl'>>): Promise<void> {
+    await models.User.update(values, {where: {id: this.id}});
+    _.assignIn(this, values);
+  }
 }
