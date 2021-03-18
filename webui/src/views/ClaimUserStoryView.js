@@ -4,21 +4,23 @@ import { Link, Redirect } from 'react-router-dom';
 import UserStoryColumn from '../components/UserStoryColumn';
 
 class ClaimUserStoryView extends Component {
-  state = {available: [], redirect: false};
+  state = {unauth: false, available: [], redirect: false};
   async claimStory(UserStoryId) {
     const body = {action: 'CLAIM', StoryId: UserStoryId};
-    await fetch(`/api/sprints/${this.props.SprintId}/transactions`, {
+    const res = await fetch(`/api/sprints/${this.props.SprintId}/transactions`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
     });
-    this.goBack();
+    if (res.status === 401) this.setState({unauth: true});
+    else this.goBack();
   }
   async loadAvailableStories(SprintId) {
     const res = await fetch(`/api/stories?SprintId=${SprintId}&available`);
     if (res.ok) {
       this.setState({available: await res.json()});
     }
+    if (res.status === 401) this.setState({unauth: true});
   }
   async componentDidMount() {
     await this.loadAvailableStories(this.props.SprintId);
@@ -27,6 +29,7 @@ class ClaimUserStoryView extends Component {
     this.setState({redirect: true});
   }
   render() {
+    if (this.state.unauth) return <Redirect to='/' />;
     if (this.state.redirect) return <Redirect to={`/sprint/${this.props.SprintId}`} />;
     return (
       <Grid columns={1}>

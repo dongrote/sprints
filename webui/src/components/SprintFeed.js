@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Button, Feed, Grid, Header, Icon } from 'semantic-ui-react';
 import day from 'dayjs';
+import { Redirect } from 'react-router-dom';
 
 const actionIcons = {
   CLAIM: 'calendar plus outline',
@@ -16,13 +17,14 @@ const actionColors = {
 
 class SprintFeed extends Component {
   offset = 0;
-  state = {transactions: [], total: 0};
+  state = {unauth: false, transactions: [], total: 0};
   async fetchTransactionsAtOffset(offset, limit) {
     const res = await fetch(`/api/sprints/${this.props.SprintId}/transactions?offset=${offset}&limit=${limit}&reverse`)
     if (res.ok) {
       const {count, results} = await res.json();
       this.setState({transactions: this.state.transactions.concat(results), total: count});
     }
+    if (res.status === 401) this.setState({unauth: true});
   }
   async fetchMoreTransactions() {
     await this.fetchTransactionsAtOffset(this.offset, 5);
@@ -32,6 +34,7 @@ class SprintFeed extends Component {
     await this.fetchMoreTransactions();
   }
   render() {
+    if (this.state.unauth) return <Redirect to='/' />;
     return (
       <Feed>
         <Header content='Activity feed'/>

@@ -1,6 +1,7 @@
 import { Label } from 'semantic-ui-react';
 
 const roleColors = {
+  admin: 'red',
   owner: 'orange',
   manager: 'purple',
   developer: 'blue',

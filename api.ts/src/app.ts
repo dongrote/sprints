@@ -13,7 +13,7 @@ const app = express();
 
 GoogleUserAuthenticator.installOntoPassport();
 
-app.use(httplog('dev'));
+app.use(httplog('[:date[iso]] ":method :url HTTP/:http-version" :status :res[content-length] | :response-time ms'));
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(express.json());

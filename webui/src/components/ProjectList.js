@@ -1,21 +1,24 @@
 import { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import { Table, Button, Header, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 class ProjectList extends Component {
-  state = {projects: []};
+  state = {projects: [], unauth: false};
   async fetchProjects() {
     const res = await fetch(`/api/projects?GroupId=${this.props.GroupId}`);
     if (res.ok) {
       const json = await res.json();
       return json.results;
     }
+    if (res.status === 401) this.setState({unauth: true});
     return [];
   }
   async componentDidMount() {
     this.setState({projects: await this.fetchProjects()});
   }
   render() {
+    if (this.state.unauth) return <Redirect to='/' />
     return (
       <Table>
       <Table.Header>
