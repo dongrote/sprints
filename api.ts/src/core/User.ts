@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { GroupRoleBinding } from './Group';
 import models from '../db/models';
 
 interface SequelizeUser {
@@ -23,6 +24,23 @@ export interface DefaultUserValues {
   avatarUrl?: string;
 }
 
+export class GoogleUserAuthenticatorError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'GoogleUserAuthenticatorError';
+  }
+}
+
+export class UserNotFoundError extends GoogleUserAuthenticatorError {
+  email: string;
+
+  constructor(email) {
+    super(`'${email}' not found.`);
+    this.name = 'UserNotFoundError';
+    this.email = email;
+  }
+}
+
 export default class User {
   id: number;
   systemRole: string;
@@ -41,6 +59,12 @@ export default class User {
     return new User(user.toJSON());
   }
 
+  static async findByEmail(email: string): Promise<User> {
+    const row = await models.User.findOne({where: {email}});
+    if (row === null) throw new UserNotFoundError(email);
+    return new User(row.toJSON());
+  }
+
   static async findById(id: number): Promise<User|null> {
     const user = await models.User.findByPk(id);
     return user ? new User(user.toJSON()) : null;
@@ -55,5 +79,14 @@ export default class User {
     this.lastName = dbRow.lastName;
     this.displayName = dbRow.displayName;
     this.avatarUrl = dbRow.avatarUrl;
+  }
+
+  async groupRoleBindings(): Promise<Array<GroupRoleBinding>> {
+    const user = await models.User.findByPk(this.id, {include: models.Group});
+    return user.Groups.map(group => ({
+      GroupId: group.GroupRoleBinding.GroupId,
+      UserId: group.GroupRoleBinding.UserId,
+      role: group.GroupRoleBinding.role,
+    }));
   }
 }

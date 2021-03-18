@@ -10,6 +10,7 @@ import ClaimUserStoryView from './views/ClaimUserStoryView';
 import EditSprintView from './views/EditSprintView';
 import EditUserStoryView from './views/EditUserStoryView';
 import SignInView from './views/SignInView';
+import GroupsView from './views/GroupsView';
 
 class App extends Component {
   render() {
@@ -19,9 +20,14 @@ class App extends Component {
           <Route exact path='/'>
             <SignInView />
           </Route>
-          <Route exact path='/projects'>
-            <ProjectList />
+          <Route exact path='/groups'>
+            <GroupsView />
           </Route>
+          <Route
+            exact
+            path='/groups/:GroupId/projects'
+            render={props => <ProjectList GroupId={props.match.params.GroupId} />}
+          />
           <Route
             exact
             path='/project/:ProjectId/sprints'

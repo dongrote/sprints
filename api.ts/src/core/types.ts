@@ -1,3 +1,8 @@
+export interface PaginatedResults<T> {
+  count: number;
+  results: Array<T>;
+}
+
 export enum SortDirection {
   ascending = 'ASC',
   descending = 'DESC',
@@ -14,6 +19,8 @@ export interface PaginationOptions {
   sort?: SortOptions;
   reverse?: boolean;
 }
+
+export type PaginationOptionsWithGroupId = PaginationOptions & {GroupId?: Array<number>|number};
 
 export interface IProject {
   id: number;

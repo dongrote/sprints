@@ -1,9 +1,35 @@
-import { ClaimStoryOptions, CompleteStoryOptions, ISprint, ISprintCreate, ISprintPoints, PaginationOptions, RemitStoryOptions, SprintTransactionAction } from './types';
+import {
+  ClaimStoryOptions,
+  CompleteStoryOptions,
+  ISprint,
+  ISprintCreate,
+  ISprintPoints,
+  PaginatedResults,
+  PaginationOptions,
+  PaginationOptionsWithGroupId,
+  RemitStoryOptions,
+  SprintTransactionAction,
+} from './types';
+import Project from './Project';
 import SprintTransaction from './SprintTransaction';
 import Story from './Story';
 import _ from 'lodash';
 import models from '../db/models';
 import dayjs from 'dayjs';
+
+export class SprintError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'SprintError';
+  }
+}
+
+export class SprintNotFoundError extends Error {
+  constructor(id: number) {
+    super(`Sprint ID ${id} not found.`);
+    this.name = 'SprintNotFoundError';
+  }
+}
 
 export default class Sprint implements ISprint {
   id: number;
@@ -14,13 +40,23 @@ export default class Sprint implements ISprint {
   startAt: Date;
   endAt: Date;
 
-  static async findAll(options?: PaginationOptions): Promise<{count: number, results: Sprint[]}> {
+  static async findProjectId(SprintId: number): Promise<number> {
+    const row = await models.Sprint.findByPk(SprintId, {attributes: ['ProjectId']});
+    if (row === null) throw new SprintNotFoundError(SprintId);
+    return row.ProjectId;
+  }
+
+  static async findGroupId(SprintId: number): Promise<number> {
+    return await Project.findGroupId(await Sprint.findProjectId(SprintId));
+  }
+
+  static async findAll(options?: PaginationOptionsWithGroupId): Promise<PaginatedResults<Sprint>> {
     const opts = _.assignIn({order: [['startAt', _.get(options, 'reverse', false) ? 'DESC' : 'ASC']]}, _.pick(options, ['offset', 'limit']));
     const {count, rows} = await models.Sprint.findAndCountAll(opts);
     return {count, results: rows.map(r => new Sprint(r.toJSON()))};
   }
 
-  static async findAllInProject(ProjectId: number, options?: PaginationOptions): Promise<{count: number, results: Sprint[]}> {
+  static async findAllInProject(ProjectId: number, options?: PaginationOptions): Promise<PaginatedResults<Sprint>> {
     const {count, rows} = await models.Sprint
       .findAndCountAll(
         _.assignIn({
@@ -30,9 +66,10 @@ export default class Sprint implements ISprint {
     return {count, results: rows.map(r => new Sprint(r.toJSON()))};
   }
 
-  static async findById(SprintId: number): Promise<null|Sprint> {
+  static async findById(SprintId: number): Promise<Sprint> {
     const row = await models.Sprint.findByPk(SprintId);
-    return row === null ? null : new Sprint(row.toJSON());
+    if (row === null) throw new SprintNotFoundError(SprintId);
+    return new Sprint(row.toJSON());
   }
 
   static async createInProject(ProjectId: number, createOptions: ISprintCreate): Promise<Sprint> {
@@ -52,18 +89,6 @@ export default class Sprint implements ISprint {
       completed: data.completedPoints,
       claimed: data.claimedPoints,
       remaining: data.claimedPoints - data.completedPoints,
-    };
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      ProjectId: this.ProjectId,
-      name: this.name,
-      description: this.description,
-      points: this.points,
-      startAt: this.startAt.toJSON(),
-      endAt: this.endAt.toJSON(),
     };
   }
 

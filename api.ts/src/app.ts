@@ -20,9 +20,9 @@ app.use(express.json());
 app.use('/api', routes);
 app.use((req: Request, res: Response, next: NextFunction) => next(new HttpError(404)));
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  const status: number = _.get(err, 'statusCode', 500);
+  const status: number = _.get(err, 'statusCode', 400);
   log.error(err);
-  res.status(status).json({error: {message: err.message}});
+  res.status(status).json({error: {message: err.message, name: err.name}});
 });
 
 export default app;
