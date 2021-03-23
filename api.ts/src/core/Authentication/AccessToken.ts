@@ -4,9 +4,14 @@ import env from '../../env';
 import User from '../User';
 import { GroupRole } from '../Group';
 
+export enum SystemRole {
+  ADMIN='admin',
+  USER='user',
+}
+
 export interface AccessTokenPayload {
   userId: number;
-  systemRole: string;
+  systemRole: SystemRole;
   groupRoleBindings: Array<{groupId: number, memberRole: GroupRole}>;
   iat: number;
   exp: number;
@@ -65,7 +70,7 @@ export default class AccessToken {
 
   userId(): number { return this.decoded.userId; }
 
-  systemRole(): string { return this.decoded.systemRole; }
+  systemRole(): SystemRole { return this.decoded.systemRole; }
 
   groupIds(): Array<number> { return this.decoded.groupRoleBindings.map(binding => binding.groupId); }
 

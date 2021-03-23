@@ -1,10 +1,10 @@
 import { Component } from 'react';
-import { Table, Button, Header, Icon } from 'semantic-ui-react';
+import { Table, Button, Header, Icon, Input } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import GroupMemberList from '../components/GroupMemberList';
 
 class GroupsView extends Component {
-  state = {groups: [], members: {}};
+  state = {groups: [], newGroupName: '', createDisabled: true};
   async fetchGroups() {
     const res = await fetch('/api/groups');
     if (res.ok) {
@@ -12,6 +12,9 @@ class GroupsView extends Component {
       return json.results;
     }
     return [];
+  }
+  changeNewGroupName(name) {
+    this.setState({newGroupName: name, createDisabled: name.length === 0});
   }
   async componentDidMount() {
     this.setState({groups: await this.fetchGroups()});
@@ -26,6 +29,26 @@ class GroupsView extends Component {
         </Table.Row>
       </Table.Header>
       <Table.Body>
+        <Table.Row>
+          <Table.Cell>
+            <Input>
+              <input
+                size='40'
+                placeholder='New Group Name'
+                value={this.state.newGroupName}
+                onChange={e => this.changeNewGroupName(e.target.value)}
+              />
+            </Input>
+          </Table.Cell>
+          <Table.Cell textAlign='right' verticalAlign='top'>
+            <Button
+              primary
+              disabled={this.state.createDisabled}
+              icon='plus square outline'
+              content='Create New Group'
+            />
+          </Table.Cell>
+        </Table.Row>
       {this.state.groups.map((group, i) => (
         <Table.Row key={i}>
           <Table.Cell>

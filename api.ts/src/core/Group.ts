@@ -44,6 +44,7 @@ export interface GroupRoleBinding {
   GroupId: number;
   UserId: number;
   role: GroupRole;
+  name: string;
 }
 
 export interface GroupMember {

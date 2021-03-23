@@ -2,6 +2,7 @@ import { IProject, PaginationOptions, PaginatedResults } from './types';
 import _ from 'lodash';
 import models from '../db/models';
 import Sprint from './Sprint';
+import Group from './Group';
 
 export class ProjectError extends Error {
   constructor(message) {
@@ -32,24 +33,25 @@ export default class Project implements IProject {
   id: number;
   GroupId: number;
   name: string;
+  Group?: Group;
   description?: string;
 
   static async findAll(options?: PaginationOptions & {GroupId?: Array<number>|number}): Promise<PaginatedResults<Project>> {
-    const opt = {order: [['name']], offset: _.get(options, 'offset', 0), limit: undefined, where: {GroupId: undefined}};
+    const opt = {order: [['name']], offset: _.get(options, 'offset', 0), limit: undefined, where: {}, include: [models.Group]};
     if (_.has(options, 'limit')) opt.limit = options.limit;
-    if (_.has(options, 'GroupId')) opt.where.GroupId = options.GroupId;
+    if (_.has(options, 'GroupId')) _.set(opt.where, 'GroupId', options.GroupId);
     const {count, rows} = await models.Project.findAndCountAll(opt);
     return {count, results: rows.map(r => new Project(r.toJSON()))};
   }
 
   static async findById(id: number): Promise<Project> {
-    const row = await models.Project.findByPk(id);
+    const row = await models.Project.findByPk(id, {include: [models.Group]});
     if (row === null) throw new ProjectIdNotFoundError(id);
     return new Project(row.toJSON());
   }
 
   static async findByIdInGroups(id: number, GroupId: Array<number>|number) {
-    const row = await models.Project.findOne({where: {id, GroupId}});
+    const row = await models.Project.findOne({where: {id, GroupId}, include: [models.Group]});
     if (row === null) throw new ProjectIdNotFoundError(id);
     return new Project(row.toJSON());
   }
@@ -75,6 +77,7 @@ export default class Project implements IProject {
     this.name = data.name;
     this.description = data.description;
     this.GroupId = data.GroupId;
+    this.Group = data.Group;
   }
 
   async velocity(): Promise<number[]> {

@@ -48,17 +48,9 @@ class ProjectView extends Component {
     if (!this.state.project) return null;
     return (
       <Grid columns={1}>
-        <Grid.Row columns={2}>
+        <Grid.Row columns={1}>
           <Grid.Column>
             <Header as='h1' icon='briefcase' content={this.state.project.name} />
-          </Grid.Column>
-          <Grid.Column textAlign='right'>
-            <Link to={`/groups/${this.state.project.GroupId}/projects`}>
-              <Button basic>
-                <Icon name='home' />
-                Home
-              </Button>
-            </Link>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>

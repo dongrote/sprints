@@ -11,13 +11,14 @@ import EditSprintView from './views/EditSprintView';
 import EditUserStoryView from './views/EditUserStoryView';
 import SignInView from './views/SignInView';
 import GroupsView from './views/GroupsView';
+import UsersView from './views/UsersView';
 import NavigationHeader from './components/NavigationHeader';
 
 const WithNavigationHeader = props => (
   <Grid columns={1}>
     <Grid.Row>
       <Grid.Column>
-        <NavigationHeader />
+        <NavigationHeader GroupId={props.GroupId} />
       </Grid.Column>
     </Grid.Row>
     <Grid.Row>
@@ -41,11 +42,16 @@ class App extends Component {
               <GroupsView />
             </WithNavigationHeader>
           </Route>
+          <Route exact path='/users'>
+            <WithNavigationHeader>
+              <UsersView />
+            </WithNavigationHeader>
+          </Route>
           <Route
             exact
             path='/groups/:GroupId/projects'
             render={props => (
-              <WithNavigationHeader>
+              <WithNavigationHeader GroupId={props.match.params.GroupId}>
                 <ProjectList GroupId={props.match.params.GroupId} />
               </WithNavigationHeader>
             )}

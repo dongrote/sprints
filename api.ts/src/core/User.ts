@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { GroupRoleBinding } from './Group';
 import models from '../db/models';
+import { PaginatedResults } from './types';
 
 interface SequelizeUser {
   id: number;
@@ -70,6 +71,11 @@ export default class User {
     return user ? new User(user.toJSON()) : null;
   }
 
+  static async findAll(): Promise<PaginatedResults<User>> {
+    const {count, rows} = await models.User.findAndCountAll();
+    return {count, results: rows.map(row => new User(row.toJSON()))};
+  }
+
   constructor(dbRow: SequelizeUser) {
     this.id = dbRow.id;
     this.systemRole = dbRow.systemRole;
@@ -87,6 +93,7 @@ export default class User {
       GroupId: group.GroupRoleBinding.GroupId,
       UserId: group.GroupRoleBinding.UserId,
       role: group.GroupRoleBinding.role,
+      name: group.name,
     }));
   }
 

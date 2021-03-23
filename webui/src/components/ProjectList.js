@@ -1,10 +1,10 @@
 import { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Table, Button, Header, Icon } from 'semantic-ui-react';
+import { Table, Button, Header, Icon, Input } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 class ProjectList extends Component {
-  state = {projects: [], unauth: false};
+  state = {projects: [], unauth: false, newProjectName: '', createDisabled: true};
   async fetchProjects() {
     const res = await fetch(`/api/projects?GroupId=${this.props.GroupId}`);
     if (res.ok) {
@@ -13,6 +13,9 @@ class ProjectList extends Component {
     }
     if (res.status === 401) this.setState({unauth: true});
     return [];
+  }
+  changeNewProjectName(name) {
+    this.setState({newProjectName: name, createDisabled: name.length === 0});
   }
   async componentDidMount() {
     this.setState({projects: await this.fetchProjects()});
@@ -28,6 +31,26 @@ class ProjectList extends Component {
         </Table.Row>
       </Table.Header>
       <Table.Body>
+        <Table.Row>
+          <Table.Cell>
+            <Input>
+              <input
+                size='40'
+                placeholder='New Project Name'
+                value={this.state.newProjectName}
+                onChange={e => this.changeNewProjectName(e.target.value)}
+              />
+            </Input>
+          </Table.Cell>
+          <Table.Cell textAlign='right' verticalAlign='top'>
+            <Button
+              primary
+              disabled={this.state.createDisabled}
+              icon='plus square outline'
+              content='Create New Project'
+            />
+          </Table.Cell>
+        </Table.Row>
       {this.state.projects.map((project, i) => (
         <Table.Row key={i}>
           <Table.Cell>

@@ -3,6 +3,7 @@ import HttpError from 'http-error-constructor';
 import { RequestWithTokens } from './types';
 import Group, { GroupRole } from '../core/Group';
 import TokenSet from '../core/Authentication/TokenSet';
+import { SystemRole } from '../core/Authentication/AccessToken';
 
 const router = Router();
 
@@ -30,10 +31,20 @@ router.get('/', async (req: RequestWithTokens, res, next) => {
   }
 });
 
+router.get('/:GroupId', async (req: RequestWithTokens, res, next) => {
+  const GroupId = Number(req.params.GroupId);
+  try {
+    if (req.accessToken.systemRole() === SystemRole.USER && !req.accessToken.belongsToGroupId(GroupId)) throw new HttpError(403);
+    res.json(await Group.findById(GroupId));
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.get('/:GroupId/members', async (req: RequestWithTokens, res, next) => {
   const GroupId = Number(req.params.GroupId);
   try {
-    if (!req.accessToken.belongsToGroupId(GroupId)) throw new HttpError(403);
+    if (req.accessToken.systemRole() === SystemRole.USER && !req.accessToken.belongsToGroupId(GroupId)) throw new HttpError(403);
     const group = await Group.findById(GroupId);
     res.json(await group.findAllMembers());
   } catch (err) {
@@ -43,7 +54,7 @@ router.get('/:GroupId/members', async (req: RequestWithTokens, res, next) => {
 
 router.post('/role', async (req: RequestWithTokens, res, next) => {
   try {
-    if (req.accessToken.groupRole(req.body.GroupId) !== GroupRole.OWNER) throw new HttpError(403);
+    if (req.accessToken.systemRole() === SystemRole.USER && req.accessToken.groupRole(req.body.GroupId) !== GroupRole.OWNER) throw new HttpError(403);
     const group = await Group.findById(req.body.GroupId);
     await group.addUserRole(req.body.UserId, req.body.role);
     res.sendStatus(204);
@@ -54,7 +65,7 @@ router.post('/role', async (req: RequestWithTokens, res, next) => {
 
 router.patch('/role', async (req: RequestWithTokens, res, next) => {
   try {
-    if (req.accessToken.groupRole(req.body.GroupId) !== GroupRole.OWNER) throw new HttpError(403);
+    if (req.accessToken.systemRole() === SystemRole.USER && req.accessToken.groupRole(req.body.GroupId) !== GroupRole.OWNER) throw new HttpError(403);
     const group = await Group.findById(req.body.GroupId);
     await group.changeUserRole(req.body.UserId, req.body.role);
     res.sendStatus(204);
@@ -65,7 +76,7 @@ router.patch('/role', async (req: RequestWithTokens, res, next) => {
 
 router.delete('/role', async (req: RequestWithTokens, res, next) => {
   try {
-    if (req.accessToken.groupRole(req.body.GroupId) !== GroupRole.OWNER) throw new HttpError(403);
+    if (req.accessToken.systemRole() === SystemRole.USER && req.accessToken.groupRole(req.body.GroupId) !== GroupRole.OWNER) throw new HttpError(403);
     const group = await Group.findById(req.body.GroupId);
     await group.removeUserRole(req.body.UserId);
     res.sendStatus(204);
