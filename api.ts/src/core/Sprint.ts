@@ -119,7 +119,7 @@ export default class Sprint implements ISprint {
   }
 
   withinSprintPeriod(date: Date): boolean {
-    return dayjs(date).isBetween(dayjs(this.startAt), dayjs(this.endAt));
+    return dayjs(date).isBetween(dayjs(this.startAt), dayjs(this.endAt), 'day', '[]');
   }
 
   validateSprintTransactionCreatedAt(createdAt: Date) {
