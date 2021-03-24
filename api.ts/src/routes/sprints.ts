@@ -6,8 +6,7 @@ import BurndownChart from '../core/BurndownChart';
 import { GroupRole } from '../core/Group';
 import Project from '../core/Project';
 import Sprint from '../core/Sprint';
-import SprintTransaction from '../core/SprintTransaction';
-import { SprintTransactionAction } from '../core/types';
+import SprintTransaction, { SprintTransactionAction } from '../core/SprintTransaction';
 
 const router = Router();
 

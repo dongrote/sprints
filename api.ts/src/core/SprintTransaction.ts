@@ -1,8 +1,23 @@
-import {ISprintTransaction, SprintTransactionAction, PaginationOptions, ISprintTransactionCreate} from './types';
+import { PaginationOptions } from './types';
 import _ from 'lodash';
 import models from '../db/models';
 
-class SprintTransaction implements ISprintTransaction {
+export enum SprintTransactionAction {
+  Claim = 'CLAIM',
+  Complete = 'COMPLETE',
+  Remit = 'UNCLAIM',
+  InProgress = 'INPROGRESS',
+}
+
+export interface SprintTransactionCreateDetails {
+  SprintId: number;
+  StoryId: number;
+  action: SprintTransactionAction;
+  points: number;
+  createdAt?: Date;
+}
+
+class SprintTransaction {
   id: number;
   SprintId: number;
   StoryId: number;
@@ -11,7 +26,7 @@ class SprintTransaction implements ISprintTransaction {
   ts: Date;
   points: number;
 
-  static async create(details: ISprintTransactionCreate) {
+  static async create(details: SprintTransactionCreateDetails) {
     const row = await models.SprintTransaction.create(details);
     return new SprintTransaction(row.toJSON());
   }

@@ -2,7 +2,7 @@ import Sprint from './Sprint';
 import SprintTransaction from './SprintTransaction';
 import _ from 'lodash';
 import dayjs from 'dayjs';
-import { SprintTransactionAction } from './types';
+import { SprintTransactionAction } from './SprintTransaction';
 
 export interface BurndownValues {
   net: number[],
