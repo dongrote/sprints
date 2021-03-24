@@ -49,30 +49,6 @@ export interface IStory {
   points: number;
 }
 
-export enum SprintTransactionAction {
-  Claim = 'CLAIM',
-  Complete = 'COMPLETE',
-  Remit = 'UNCLAIM',
-  InProgress = 'INPROGRESS',
-}
-
-export interface ISprintTransaction {
-  id: number;
-  SprintId: number;
-  StoryId: number;
-  action: SprintTransactionAction;
-  points: number;
-  ts: Date;
-}
-
-export interface ISprintTransactionCreate {
-  SprintId: number;
-  StoryId: number;
-  action: SprintTransactionAction;
-  points: number;
-  createdAt?: Date;
-}
-
 export interface ISprintCreate {
   name: string;
   description?: string;

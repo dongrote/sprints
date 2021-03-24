@@ -1,7 +1,8 @@
 import models from '../db/models';
 import _ from 'lodash';
-import { IStoryCreate, SprintTransactionAction, PaginationOptions } from './types';
+import { IStoryCreate, PaginationOptions } from './types';
 import Project from './Project';
+import { SprintTransactionAction } from './SprintTransaction';
 
 class StoryError extends Error {
   constructor(message) {

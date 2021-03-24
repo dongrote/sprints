@@ -8,14 +8,15 @@ import {
   PaginationOptions,
   PaginationOptionsWithGroupId,
   RemitStoryOptions,
-  SprintTransactionAction,
 } from './types';
 import Project from './Project';
-import SprintTransaction from './SprintTransaction';
+import SprintTransaction, { SprintTransactionAction } from './SprintTransaction';
 import Story from './Story';
 import _ from 'lodash';
 import models from '../db/models';
 import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
 
 export class SprintError extends Error {
   constructor(message) {
@@ -24,10 +25,17 @@ export class SprintError extends Error {
   }
 }
 
-export class SprintNotFoundError extends Error {
+export class SprintNotFoundError extends SprintError {
   constructor(id: number) {
     super(`Sprint ID ${id} not found.`);
     this.name = 'SprintNotFoundError';
+  }
+}
+
+export class InvalidSprintTransactionDate extends SprintError {
+  constructor(args: {start: Date, end: Date, ts: Date}) {
+    super(`SprintTransaction create date {${args.ts}} is outside of the range ${args.start} - ${args.end}.`);
+    this.name = 'InvalidSprintTransactionDate';
   }
 }
 
@@ -110,43 +118,57 @@ export default class Sprint implements ISprint {
     return this.points.completed;
   }
 
+  withinSprintPeriod(date: Date): boolean {
+    return dayjs(date).isBetween(dayjs(this.startAt), dayjs(this.endAt));
+  }
+
+  validateSprintTransactionCreatedAt(createdAt: Date) {
+    if (! this.withinSprintPeriod(createdAt)) throw new InvalidSprintTransactionDate({start: this.startAt, end: this.endAt, ts: createdAt});
+  }
+
   async claimStory(StoryId: number, options?: ClaimStoryOptions): Promise<void> {
+    const createdAt = _.get(options, 'timestamp', new Date());
+    this.validateSprintTransactionCreatedAt(createdAt);
     const story = await Story.findById(StoryId);
     await Promise.all([
       SprintTransaction.create({
+        createdAt,
         SprintId: this.id,
         StoryId: StoryId,
         action: SprintTransactionAction.Claim,
         points: story.points,
-        createdAt: _.get(options, 'timestamp', new Date()),
       }),
       models.Sprint.increment('claimedPoints', {where: {id: this.id}, by: story.points}),
     ]);
   }
 
   async remitStory(StoryId: number, options?: RemitStoryOptions): Promise<void> {
+    const createdAt = _.get(options, 'timestamp', new Date());
+    this.validateSprintTransactionCreatedAt(createdAt);
     const story = await Story.findById(StoryId);
     await Promise.all([
       SprintTransaction.create({
+        createdAt,
         SprintId: this.id,
         StoryId: StoryId,
         action: SprintTransactionAction.Remit,
         points: story.points,
-        createdAt: _.get(options, 'timestamp', new Date()),
       }),
       models.Sprint.decrement('claimedPoints', {where: {id: this.id}, by: story.points}),
     ]);
   }
 
   async completeStory(StoryId: number, options?: CompleteStoryOptions): Promise<void> {
+    const createdAt = _.get(options, 'timestamp', new Date());
+    this.validateSprintTransactionCreatedAt(createdAt);
     const story = await Story.findById(StoryId);
     await Promise.all([
       SprintTransaction.create({
+        createdAt,
         SprintId: this.id,
         StoryId: StoryId,
         action: SprintTransactionAction.Complete,
         points: story.points,
-        createdAt: _.get(options, 'timestamp', new Date()),
       }),
       models.Sprint.increment('completedPoints', {where: {id: this.id}, by: story.points}),
       story.markComplete(),
