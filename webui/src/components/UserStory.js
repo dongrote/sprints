@@ -6,16 +6,18 @@ const UserStory = props => (
   <Card fluid={props.fluid}>
     <Card.Content>
       <Card.Header>
-        <Grid columns={2}>
+        <Grid columns={props.showEdit ? 2 : 1}>
           <Grid.Row>
             <Grid.Column>
               {props.title}
             </Grid.Column>
-            <Grid.Column textAlign='right' verticalAlign='middle'>
-              <Link to={`/story/${props.UserStoryId}/edit`}>
-                <Button disabled compact basic size='mini' icon='edit' />
-              </Link>
-            </Grid.Column>
+            {!props.editDisabled && (
+              <Grid.Column textAlign='right' verticalAlign='middle'>
+                <Link to={`/story/${props.UserStoryId}/edit`}>
+                  <Button disabled compact basic size='mini' icon='edit' />
+                </Link>
+              </Grid.Column>
+            )}
           </Grid.Row>
         </Grid>
       </Card.Header>

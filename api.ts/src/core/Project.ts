@@ -3,6 +3,7 @@ import _ from 'lodash';
 import models from '../db/models';
 import Sprint from './Sprint';
 import Group from './Group';
+import Story from './Story';
 
 export class ProjectError extends Error {
   constructor(message) {
@@ -29,15 +30,28 @@ export class ProjectIdNotFoundError extends ProjectError {
   }
 }
 
+export class InvalidStoryError extends ProjectError {
+  StoryId: number;
+  ProjectId: number;
+  constructor(StoryId: number, ProjectId: number) {
+    super(`Story ${StoryId} does not belong to Project ${ProjectId}`);
+    this.name = 'InvalidStoryError';
+    this.StoryId = StoryId;
+    this.ProjectId = ProjectId;
+  }
+}
+
 export default class Project implements IProject {
   id: number;
   GroupId: number;
   name: string;
   Group?: Group;
   description?: string;
+  GoldenStoryId?: number;
+  GoldenStory?: Story;
 
   static async findAll(options?: PaginationOptions & {GroupId?: Array<number>|number}): Promise<PaginatedResults<Project>> {
-    const opt = {order: [['name']], offset: _.get(options, 'offset', 0), limit: undefined, where: {}, include: [models.Group]};
+    const opt = {order: [['name']], offset: _.get(options, 'offset', 0), limit: undefined, where: {}, include: [models.Group, {model: models.Story, as: 'GoldenStory'}]};
     if (_.has(options, 'limit')) opt.limit = options.limit;
     if (_.has(options, 'GroupId')) _.set(opt.where, 'GroupId', options.GroupId);
     const {count, rows} = await models.Project.findAndCountAll(opt);
@@ -45,13 +59,13 @@ export default class Project implements IProject {
   }
 
   static async findById(id: number): Promise<Project> {
-    const row = await models.Project.findByPk(id, {include: [models.Group]});
+    const row = await models.Project.findByPk(id, {include: [models.Group, {model: models.Story, as: 'GoldenStory'}]});
     if (row === null) throw new ProjectIdNotFoundError(id);
     return new Project(row.toJSON());
   }
 
   static async findByIdInGroups(id: number, GroupId: Array<number>|number) {
-    const row = await models.Project.findOne({where: {id, GroupId}, include: [models.Group]});
+    const row = await models.Project.findOne({where: {id, GroupId}, include: [models.Group, {model: models.Story, as: 'GoldenStory'}]});
     if (row === null) throw new ProjectIdNotFoundError(id);
     return new Project(row.toJSON());
   }
@@ -78,6 +92,8 @@ export default class Project implements IProject {
     this.description = data.description;
     this.GroupId = data.GroupId;
     this.Group = data.Group;
+    this.GoldenStoryId = data.GoldenStoryId;
+    this.GoldenStory = data.GoldenStory;
   }
 
   async velocity(): Promise<number[]> {
