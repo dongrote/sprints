@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Story.init({
+    ProjectId: DataTypes.INTEGER,
     title: {
       type: DataTypes.STRING,
       allowNull: false,

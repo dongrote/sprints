@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Button, Card, Container, Divider, Form, Header, Icon, Input } from 'semantic-ui-react';
+import { Button, Card, Container, Divider, Form, Grid, Header, Icon, Input } from 'semantic-ui-react';
+import UserStory from '../components/UserStory';
 
 class NewUserStoryView extends Component {
   state = {
@@ -11,12 +12,24 @@ class NewUserStoryView extends Component {
     benefit: '',
     points: 0,
     redirect: false,
+    GoldenStoryId: null,
+    GoldenStoryDescription: null,
+    GoldenStoryPoints: null,
+    GoldenStoryTitle: null,
+    GoldenStoryCompletedAt: null,
   };
-  async fetchProjectName(ProjectId) {
+  async fetchProjectDetails(ProjectId) {
     const res = await fetch(`/api/projects/${ProjectId}`);
     if (res.ok) {
       const json = await res.json();
-      this.setState({project: json.name});
+      this.setState({
+        project: json.name,
+        GoldenStoryId: json.GoldenStory?.id,
+        GoldenStoryTitle: json.GoldenStory?.title,
+        GoldenStoryPoints: json.GoldenStory?.points,
+        GoldenStoryDescription: json.GoldenStory?.description,
+        GoldenStoryCompletedAt: json.GoldenStory?.completedAt,
+      });
     }
   }
   onRoleChange(role) { this.setState({role}); }
@@ -50,7 +63,7 @@ class NewUserStoryView extends Component {
     }
   }
   async componentDidMount() {
-    await this.fetchProjectName(this.props.ProjectId);
+    await this.fetchProjectDetails(this.props.ProjectId);
   }
   render() {
     if (this.state.redirect) return <Redirect to={`/project/${this.props.ProjectId}`} />;
@@ -63,7 +76,10 @@ class NewUserStoryView extends Component {
           </Card.Header>
         </Card.Content>
         <Card.Content extra>
-        <Form>
+          <Grid stackable columns={this.state.GoldenStoryId === null ? 1 : 2}>
+            <Grid.Row>
+              <Grid.Column>
+              <Form>
         <Form.Group>
           <Form.Field>
             <label>Title</label>
@@ -136,6 +152,26 @@ class NewUserStoryView extends Component {
           <Button content='Cancel' onClick={() => this.setState({redirect: true})} />
         </Form.Group>
       </Form>
+              </Grid.Column>
+              {this.state.GoldenStoryId && (
+                <Grid.Column>
+                  <Header as='h3'>
+                    <Icon name='star' color='yellow' />
+                    Golden Standard
+                  </Header>
+                  <UserStory
+                    fluid
+                    editDisabled={true}
+                    title={this.state.GoldenStoryTitle}
+                    UserStoryId={this.state.GoldenStoryId}
+                    description={this.state.GoldenStoryDescription}
+                    points={this.state.GoldenStoryPoints}
+                    completedAt={this.state.GoldenStoryCompletedAt}
+                  />
+                </Grid.Column>
+              )}
+            </Grid.Row>
+          </Grid>
         </Card.Content>
       </Card>
       </Container>

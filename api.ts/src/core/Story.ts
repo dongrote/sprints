@@ -1,7 +1,9 @@
 import models from '../db/models';
 import _ from 'lodash';
 import { IStoryCreate, PaginationOptions } from './types';
+import AccessToken, { SystemRole } from './Authentication/AccessToken';
 import Project from './Project';
+import { GroupRole } from './Group';
 import { SprintTransactionAction } from './SprintTransaction';
 
 class StoryError extends Error {
@@ -23,7 +25,9 @@ class Story {
   title: string;
   description?: string;
   points: number;
+  createdAt: Date;
   completedAt?: Date;
+  ProjectId: number;
 
   static async findGroupId(StoryId: number): Promise<number> {
     const row = await models.Story.findByPk(StoryId, {attributes: ['ProjectId']});
@@ -79,11 +83,23 @@ class Story {
     this.title = data.title;
     this.description = data.description;
     this.points = data.points;
+    this.createdAt = data.createdAt;
     this.completedAt = data.completedAt;
+    // accidentally created the ProjectId key as a string instead of an integer :facepalm:
+    this.ProjectId = Number(data.ProjectId);
   }
 
   async markComplete(): Promise<void> {
     await models.Story.update({completedAt: new Date()}, {where: {id: this.id}});
+  }
+
+  async mayGildWithAccessToken(token: AccessToken): Promise<boolean> {
+    return token.isSystemAdministrator() || token.isRoleInGroup(GroupRole.DEVELOPER, await Story.findGroupId(this.id));
+  }
+
+  async gild(accessToken: AccessToken): Promise<void> {
+    if (! await this.mayGildWithAccessToken(accessToken)) throw new Error();
+    await models.Project.update({GoldenStoryId: this.id}, {where: {id: this.ProjectId}});
   }
 }
 

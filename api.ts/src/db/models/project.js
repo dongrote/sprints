@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       models.Project.hasMany(models.Sprint);
       models.Project.hasMany(models.Story);
       models.Project.belongsTo(models.Group);
+      models.Project.belongsTo(models.Story, {as: 'GoldenStory', foreignKey: 'GoldenStoryId'});
     }
   };
   Project.init({

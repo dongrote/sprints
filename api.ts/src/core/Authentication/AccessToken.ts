@@ -72,6 +72,8 @@ export default class AccessToken {
 
   systemRole(): SystemRole { return this.decoded.systemRole; }
 
+  isSystemAdministrator(): boolean { return this.systemRole() === SystemRole.ADMIN; }
+
   groupIds(): Array<number> { return this.decoded.groupRoleBindings.map(binding => binding.groupId); }
 
   belongsToGroupId(GroupId: number): boolean {
@@ -83,6 +85,8 @@ export default class AccessToken {
     if (!binding) throw new GroupAccessDeniedError(this.userId(), GroupId);
     return binding.memberRole;
   }
+
+  isRoleInGroup(role: GroupRole, GroupId: number): boolean { return this.groupRole(GroupId) === role; }
 
   groupRoleIncludes(GroupId: number, roles: Array<GroupRole>) {
     return _.includes(roles, this.groupRole(GroupId));

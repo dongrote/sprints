@@ -1,9 +1,8 @@
-import { Request, Response, NextFunction, Router } from 'express';
+import { Response, NextFunction, Router } from 'express';
 import { RequestWithTokens } from './types';
 import HttpError from 'http-error-constructor';
 import _ from 'lodash';
 import Project from '../core/Project';
-import { GroupRole } from '../core/Group';
 import Story from '../core/Story';
 import Sprint from '../core/Sprint';
 
@@ -46,6 +45,15 @@ router.get('/:id', async (req: RequestWithTokens, res: Response, next: NextFunct
     if (isNaN(StoryId)) throw new HttpError(400, `invalid StoryId: '${req.params.id}'`);
     if (!req.accessToken.belongsToGroupId(await Story.findGroupId(StoryId))) throw new HttpError(403);
     res.json(await Story.findById(StoryId));
+  } catch (err) {
+    return next(err);
+  }
+});
+router.post('/:id/gild', async (req: RequestWithTokens, res, next) => {
+  try {
+    const story = await Story.findById(Number(req.params.id));
+    await story.gild(req.accessToken);
+    res.sendStatus(204);
   } catch (err) {
     return next(err);
   }
