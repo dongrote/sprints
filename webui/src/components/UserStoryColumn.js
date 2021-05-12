@@ -1,13 +1,21 @@
 import { Table } from 'semantic-ui-react';
 import UserStory from './UserStory';
 
-const UserStoryColumn = props => {
-  const sum = props.userStories.reduce((acc, cur) => acc + cur.points, 0);
-  return (
+const storyCountString = stories => {
+  const count = stories.length;
+  return count === 1 ? `1 story` : `${count} stories`;
+};
+
+const storyPointSumString = stories => {
+  const sum = stories.reduce((acc, cur) => acc + cur.points, 0);
+  return `${sum} point${sum === 1 ? '' : 's'}`;
+};
+
+const UserStoryColumn = props => (
   <Table color={props.color}>
     <Table.Header>
       <Table.Row>
-        <Table.HeaderCell>{`${props.header} (${sum} point${sum === 1 ? '' : 's'})`}</Table.HeaderCell>
+        <Table.HeaderCell>{`${props.header} (${storyCountString(props.userStories)} | ${storyPointSumString(props.userStories)})`}</Table.HeaderCell>
       </Table.Row>
     </Table.Header>
     <Table.Body>
@@ -31,6 +39,5 @@ const UserStoryColumn = props => {
     </Table.Body>
   </Table>
 );
-      };
 
 export default UserStoryColumn;
