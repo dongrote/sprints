@@ -16,6 +16,8 @@ interface SequelizeUser {
   updatedAt: Date;
 }
 
+export type UserID = number;
+
 export interface DefaultUserValues {
   identityProvider: string;
   systemRole: string;
@@ -43,7 +45,7 @@ export class UserNotFoundError extends GoogleUserAuthenticatorError {
 }
 
 export default class User {
-  id: number;
+  id: UserID;
   systemRole: string;
   email: string;
   identityProvider: string;
@@ -66,7 +68,7 @@ export default class User {
     return new User(row.toJSON());
   }
 
-  static async findById(id: number): Promise<User|null> {
+  static async findById(id: UserID): Promise<User|null> {
     const user = await models.User.findByPk(id);
     return user ? new User(user.toJSON()) : null;
   }

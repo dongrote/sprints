@@ -7,6 +7,7 @@ import BurndownChart from '../components/BurndownChart';
 import UserStoryColumn from '../components/UserStoryColumn';
 import NewStoryButton from '../components/NewStoryButton';
 import ClaimStoryButton from '../components/ClaimStoryButton';
+import DailyStandupFeed from '../components/DailyStandupFeed';
 
 class SprintView extends Component {
   state = {
@@ -200,7 +201,10 @@ class SprintView extends Component {
             </Grid>
           </Grid.Column>
         </Grid.Row>
-        <Grid.Row columns={1}>
+        <Grid.Row columns={2}>
+          <Grid.Column>
+            <DailyStandupFeed SprintId={this.props.SprintId} />
+          </Grid.Column>
           <Grid.Column>
             <SprintFeed SprintId={this.props.SprintId} />
           </Grid.Column>

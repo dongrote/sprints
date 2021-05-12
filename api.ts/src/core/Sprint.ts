@@ -39,8 +39,10 @@ export class InvalidSprintTransactionDate extends SprintError {
   }
 }
 
+export type SprintID = number;
+
 export default class Sprint implements ISprint {
-  id: number;
+  id: SprintID;
   ProjectId: number;
   name: string;
   description?: string;
@@ -48,13 +50,13 @@ export default class Sprint implements ISprint {
   startAt: Date;
   endAt: Date;
 
-  static async findProjectId(SprintId: number): Promise<number> {
+  static async findProjectId(SprintId: SprintID): Promise<number> {
     const row = await models.Sprint.findByPk(SprintId, {attributes: ['ProjectId']});
     if (row === null) throw new SprintNotFoundError(SprintId);
     return row.ProjectId;
   }
 
-  static async findGroupId(SprintId: number): Promise<number> {
+  static async findGroupId(SprintId: SprintID): Promise<number> {
     return await Project.findGroupId(await Sprint.findProjectId(SprintId));
   }
 
@@ -74,7 +76,7 @@ export default class Sprint implements ISprint {
     return {count, results: rows.map(r => new Sprint(r.toJSON()))};
   }
 
-  static async findById(SprintId: number): Promise<Sprint> {
+  static async findById(SprintId: SprintID): Promise<Sprint> {
     const row = await models.Sprint.findByPk(SprintId);
     if (row === null) throw new SprintNotFoundError(SprintId);
     return new Sprint(row.toJSON());

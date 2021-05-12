@@ -13,6 +13,7 @@ import SignInView from './views/SignInView';
 import GroupsView from './views/GroupsView';
 import UsersView from './views/UsersView';
 import NavigationHeader from './components/NavigationHeader';
+import CreateDailyStandupView from './views/CreateDailyStandupView';
 
 const WithNavigationHeader = props => (
   <Grid columns={1}>
@@ -97,6 +98,15 @@ class App extends Component {
             render={props => (
               <WithNavigationHeader>
                 <EditSprintView SprintId={props.match.params.SprintId} />
+              </WithNavigationHeader>
+            )}
+          />
+          <Route
+            exact
+            path='/sprint/:SprintId/create-standup'
+            render={props => (
+              <WithNavigationHeader>
+                <CreateDailyStandupView SprintId={props.match.params.SprintId} />
               </WithNavigationHeader>
             )}
           />

@@ -26,6 +26,15 @@ router.get('/me', async (req: RequestWithTokens, res, next) => {
   }
 });
 
+router.get('/:UserId', async (req: RequestWithTokens, res, next) => {
+  const UserId = Number(req.params.UserId);
+  try {
+    res.json(await User.findById(UserId));
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.get('/:UserId/groups', requireRole(SystemRole.ADMIN), async (req: RequestWithTokens, res, next) => {
   const UserId = Number(req.params.UserId);
   try {

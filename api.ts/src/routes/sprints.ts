@@ -7,6 +7,7 @@ import { GroupRole } from '../core/Group';
 import Project from '../core/Project';
 import Sprint from '../core/Sprint';
 import SprintTransaction, { SprintTransactionAction } from '../core/SprintTransaction';
+import DailyStandup from '../core/DailyStandup';
 
 const router = Router();
 
@@ -94,5 +95,36 @@ router.post('/:id/transactions', async (req: RequestWithTokens, res: Response, n
   }
 });
 router.patch('/:id', (req, res, next) => next(new HttpError(501)));
+router.post('/:id/standups', async (req: RequestWithTokens, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const SprintId = Number(req.params.id);
+    const sprint = await Sprint.findById(SprintId);
+    const GroupId = await Project.findGroupId(sprint.ProjectId);
+    if (!req.accessToken.groupRoleIncludes(GroupId, [GroupRole.DEVELOPER])) throw new HttpError(403);
+    const dailyStandup = await DailyStandup.create({
+      SprintId,
+      createdBy: req.accessToken.userId(),
+      whatDidIDoYesterday: req.body.whatDidIDoYesterday,
+      whatAmIDoingToday: req.body.whatAmIDoingToday,
+      whatIsInMyWay: req.body.whatIsInMyWay,
+    });
+    res.json(dailyStandup);
+  } catch (err) {
+    return next(err);
+  }
+});
+router.get('/:id/standups', async (req: RequestWithTokens, res: Response, next: NextFunction): Promise<void> => {
+  const SprintId = Number(req.params.id);
+  const options = {offset: Number(_.get(req.query, 'offset', 0)), reverse: _.has(req.query, 'reverse')};
+  if (_.has(req.query, 'limit')) options['limit'] = Number(req.query.limit);
+  try {
+    if (isNaN(SprintId)) throw new HttpError(400, `invalid SprintId: '${req.params.id}'`);
+    const sprint = await Sprint.findById(SprintId);
+    if (!req.accessToken.belongsToGroupId(await Project.findGroupId(sprint.ProjectId))) throw new HttpError(403);
+    res.json(await DailyStandup.findAllInSprint(SprintId, options));
+  } catch (err) {
+    return next(err);
+  }
+});
 
 export default router;
