@@ -126,5 +126,32 @@ router.get('/:id/standups', async (req: RequestWithTokens, res: Response, next: 
     return next(err);
   }
 });
+router.get('/:id/standups/:DailyStandupId', async (req: RequestWithTokens, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const DailyStandupId = Number(req.params.DailyStandupId);
+    if (isNaN(DailyStandupId)) throw new HttpError(400);
+    const dailyStandup = await DailyStandup.findById(DailyStandupId);
+    if (dailyStandup.createdBy !== req.accessToken.userId()) throw new HttpError(403);
+    res.json(dailyStandup);
+  } catch (err) {
+    return next(err);
+  }
+});
+router.patch('/:id/standups', async (req: RequestWithTokens, res: Response, next: NextFunction): Promise<void> => {
+  const {DailyStandupId} = req.body;
+  try {
+    if (isNaN(DailyStandupId)) throw new HttpError(400, `invalid DailyStandupId: '${DailyStandupId}'`);
+    const dailyStandup = await DailyStandup.findById(DailyStandupId);
+    if (dailyStandup.createdBy !== req.accessToken.userId()) throw new HttpError(403);
+    await dailyStandup.update({
+      whatDidIDoYesterday: req.body.whatDidIDoYesterday,
+      whatAmIDoingToday: req.body.whatAmIDoingToday,
+      whatIsInMyWay: req.body.whatIsInMyWay,
+    });
+    res.json(dailyStandup);
+  } catch (err) {
+    return next(err);
+  }
+});
 
 export default router;

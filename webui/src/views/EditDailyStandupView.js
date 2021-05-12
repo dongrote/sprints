@@ -6,10 +6,12 @@ import dayjs from 'dayjs';
 export default class CreateDailyStandupView extends Component {
   state = {
     redirect: false,
+    createdAt: null,
     whatDidIDoYesterday: '',
     whatAmIDoingToday: '',
     whatIsInMyWay: '',
   };
+  currentStandupValues = {};
 
   onYesterdayChange(value) {
     this.setState({whatDidIDoYesterday: value});
@@ -23,11 +25,12 @@ export default class CreateDailyStandupView extends Component {
     this.setState({whatIsInMyWay: value});
   }
 
-  async onSubmit() {
+  async onUpdate() {
     const res = await fetch(`/api/sprints/${this.props.SprintId}/standups`, {
-      method: 'POST',
+      method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
+        DailyStandupId: this.props.DailyStandupId,
         whatDidIDoYesterday: this.state.whatDidIDoYesterday,
         whatAmIDoingToday: this.state.whatAmIDoingToday,
         whatIsInMyWay: this.state.whatIsInMyWay,
@@ -37,14 +40,34 @@ export default class CreateDailyStandupView extends Component {
   }
 
   resetForm() {
-    this.setState({whatDidIDoYesterday: '', whatAmIDoingToday: '', whatIsInMyWay: ''});
+    this.setState({
+      createdAt: this.currentStandupValues.createdAt,
+      whatDidIDoYesterday: this.currentStandupValues.whatDidIDoYesterday,
+      whatAmIDoingToday: this.currentStandupValues.whatAmIDoingToday,
+      whatIsInMyWay: this.currentStandupValues.whatIsInMyWay,
+    });
+  }
+
+  async fetchDailyStandup(DailyStandupId) {
+    const res = await fetch(`/api/sprints/0/standups/${DailyStandupId}`);
+    if (res.ok) {
+      const json = await res.json();
+      this.currentStandupValues = json;
+      this.resetForm();
+    } else {
+      this.setState({redirect: true});
+    }
+  }
+
+  async componentDidMount() {
+    await this.fetchDailyStandup(this.props.DailyStandupId);
   }
 
   render() {
     if (this.state.redirect) return <Redirect to={`/sprint/${this.props.SprintId}`} />;
     return (
       <Form>
-        <Header as='h1'>Submit Daily Standup Report ({dayjs().format('ddd, MMM D, YYYY')})</Header>
+        <Header as='h1'>Edit Daily Standup Report ({dayjs(this.state.createdAt).format('ddd, MMM D, YYYY')})</Header>
         <Form.TextArea
           label='What did I do yesterday?'
           value={this.state.whatDidIDoYesterday}
@@ -61,7 +84,7 @@ export default class CreateDailyStandupView extends Component {
           onChange={e => this.onBlockingChange(e.target.value)}
         />
         <Form.Group>
-          <Button primary icon='save' content='Submit' onClick={() => this.onSubmit()} />
+          <Button primary icon='save' content='Update' onClick={() => this.onUpdate()} />
           <Button icon='undo' content='Reset' onClick={() => this.resetForm()} />
           <Button icon='close' content='Cancel' onClick={() => this.setState({redirect: true})} />
         </Form.Group>

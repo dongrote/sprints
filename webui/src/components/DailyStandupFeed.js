@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, List } from 'semantic-ui-react';
+import { Button, Header, List } from 'semantic-ui-react';
 import DailyStandup from './DailyStandup';
 
 export default class DailyStandupFeed extends Component {
@@ -21,7 +21,9 @@ export default class DailyStandupFeed extends Component {
   render() {
     return (
       <List>
-        <List.Header>Daily Standups</List.Header>
+        <List.Header>
+          <Header content='Daily Standups' />
+        </List.Header>
         <List.Item>
           <Link to={`/sprint/${this.props.SprintId}/create-standup`}>
             <Button fluid primary content='New Standup' />
@@ -30,8 +32,12 @@ export default class DailyStandupFeed extends Component {
         {this.state.standups.map((standup, i) => (
           <List.Item key={i}>
             <DailyStandup
+              SprintId={this.props.SprintId}
+              DailyStandupId={standup.DailyStandupId}
               createdBy={standup.createdBy}
               createdAt={standup.createdAt}
+              updatedAt={standup.updatedAt}
+              edited={standup.createdAt !== standup.updatedAt}
               whatDidIDoYesterday={standup.whatDidIDoYesterday}
               whatAmIDoingToday={standup.whatAmIDoingToday}
               whatIsInMyWay={standup.whatIsInMyWay}

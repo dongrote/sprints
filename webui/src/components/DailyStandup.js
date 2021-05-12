@@ -1,5 +1,6 @@
 import { Component } from 'react';
-import {Card, Image, List} from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import {Button, Card, Image, List} from 'semantic-ui-react';
 import dayjs from 'dayjs';
 
 const dateFormat = 'ddd, MMM D, YYYY';
@@ -26,7 +27,10 @@ export default class DailyStandup extends Component {
             src={this.state.avatarUrl}
           />}
           <Card.Header>{this.state.firstName} {this.state.lastName}</Card.Header>
-          <Card.Meta>{dayjs(this.props.createdAt).format(dateFormat)}</Card.Meta>
+          <Card.Meta>
+            {dayjs(this.props.createdAt).format(dateFormat)}
+            {this.props.edited && (<span title={dayjs(this.props.updatedAt).format('ddd, MMM D, YYYY h:mm a')} style={{'font-style': 'italic'}}> (edited)</span>)}
+          </Card.Meta>
           <Card.Description>
             <List divided relaxed>
               <List.Item>
@@ -52,6 +56,11 @@ export default class DailyStandup extends Component {
               </List.Item>
             </List>
           </Card.Description>
+        </Card.Content>
+        <Card.Content extra>
+          <Link to={`/sprint/${this.props.SprintId}/standups/${this.props.DailyStandupId}`}>
+            <Button fluid icon='edit' content='Edit' />
+          </Link>
         </Card.Content>
       </Card>
     );    

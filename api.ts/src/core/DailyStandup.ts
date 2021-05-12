@@ -1,17 +1,35 @@
 import {SprintID} from './Sprint';
 import {UserID} from './User';
 import {PaginatedResults, PaginationOptions} from './types';
+import _ from 'lodash';
 import models from '../db/models';
 
-export interface DailyStandupCreateArguments {
-  createdBy: UserID,
-  SprintId: SprintID,
+export interface DailyStandupMutableFields {
   whatDidIDoYesterday: string,
   whatAmIDoingToday: string,
   whatIsInMyWay: string,
 }
 
+export type DailyStandupCreateArguments = {
+  createdBy: UserID,
+  SprintId: SprintID,
+} & DailyStandupMutableFields;
+
 export type DailyStandupID = number;
+
+export class DailyStandupError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'DailyStandupError';
+  }
+}
+
+export class DailyStandupNotFoundError extends DailyStandupError {
+  constructor() {
+    super(`DailyStandup not found`);
+    this.name = 'DailyStandupNotFoundError';
+  }
+}
 
 export default class DailyStandup {
   DailyStandupId: DailyStandupID;
@@ -57,6 +75,21 @@ export default class DailyStandup {
     }))};
   }
 
+  static async findById(DailyStandupId: DailyStandupID): Promise<DailyStandup> {
+    const dbRow = await models.DailyStandup.findByPk(DailyStandupId);
+    if (dbRow === null) throw new DailyStandupNotFoundError();
+    return new DailyStandup({
+      id: dbRow.id,
+      SprintId: dbRow.SprintId,
+      createdBy: dbRow.createdBy,
+      createdAt: dbRow.createdAt,
+      updatedAt: dbRow.updatedAt,
+      whatDidIDoYesterday: dbRow.whatDidIDoYesterday,
+      whatAmIDoingToday: dbRow.whatAmIDoingToday,
+      whatIsInMyWay: dbRow.whatIsInMyWay,
+    });
+  }
+
   constructor(values: DailyStandupCreateArguments & {id: DailyStandupID, createdAt: Date, updatedAt: Date}) {
     this.DailyStandupId = values.id;
     this.SprintId = values.SprintId;
@@ -66,5 +99,22 @@ export default class DailyStandup {
     this.whatDidIDoYesterday = values.whatDidIDoYesterday;
     this.whatAmIDoingToday = values.whatAmIDoingToday;
     this.whatIsInMyWay = values.whatIsInMyWay;
+  }
+
+  async update(newValues: Partial<DailyStandupMutableFields>): Promise<void> {
+    const promises = [];
+    if (newValues.whatDidIDoYesterday) {
+      promises.push(models.DailyStandup.update({whatDidIDoYesterday: newValues.whatDidIDoYesterday}, {where: {id: this.DailyStandupId}}));
+      this.whatDidIDoYesterday = newValues.whatDidIDoYesterday;
+    }
+    if (newValues.whatAmIDoingToday) {
+      promises.push(models.DailyStandup.update({whatAmIDoingToday: newValues.whatAmIDoingToday}, {where: {id: this.DailyStandupId}}));
+      this.whatAmIDoingToday = newValues.whatAmIDoingToday;
+    }
+    if (newValues.whatIsInMyWay) {
+      promises.push(models.DailyStandup.update({whatIsInMyWay: newValues.whatIsInMyWay}, {where: {id: this.DailyStandupId}}));
+      this.whatIsInMyWay = newValues.whatIsInMyWay;
+    }
+    await Promise.all(promises);
   }
 }
