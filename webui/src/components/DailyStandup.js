@@ -67,10 +67,16 @@ export default class DailyStandup extends Component {
   }
 
   renderMutable() {
-    return <EditDailyStandupForm
-      DailyStandupId={this.props.DailyStandupId}
-      onDismiss={() => this.toggleMutable()}
-    />;
+    return (
+      <Card fluid >
+        <Card.Content>
+          <EditDailyStandupForm
+            DailyStandupId={this.props.DailyStandupId}
+            onDismiss={() => this.toggleMutable()}
+          />
+        </Card.Content>
+      </Card>
+    );
   }
 
   renderImmutable() {
