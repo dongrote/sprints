@@ -14,7 +14,6 @@ import GroupsView from './views/GroupsView';
 import UsersView from './views/UsersView';
 import NavigationHeader from './components/NavigationHeader';
 import CreateDailyStandupView from './views/CreateDailyStandupView';
-import EditDailyStandupView from './views/EditDailyStandupView';
 
 const WithNavigationHeader = props => (
   <Grid columns={1}>
@@ -108,15 +107,6 @@ class App extends Component {
             render={props => (
               <WithNavigationHeader>
                 <CreateDailyStandupView SprintId={props.match.params.SprintId} />
-              </WithNavigationHeader>
-            )}
-          />
-          <Route
-            exact
-            path='/sprint/:SprintId/standups/:DailyStandupId'
-            render={props => (
-              <WithNavigationHeader>
-                <EditDailyStandupView SprintId={props.match.params.SprintId} DailyStandupId={props.match.params.DailyStandupId} />
               </WithNavigationHeader>
             )}
           />

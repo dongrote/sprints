@@ -1,17 +1,31 @@
 import { Component } from 'react';
-import { Redirect } from 'react-router-dom';
-import { Button, Form, Header } from 'semantic-ui-react';
+import { Form, Header, Icon, TextArea } from 'semantic-ui-react';
 import dayjs from 'dayjs';
 
-export default class CreateDailyStandupView extends Component {
+const IconLabelTextArea = props => (
+  <Form.Field>
+    <label>
+      <Icon name={props.icon} />
+      {props.label}
+    </label>
+    <TextArea value={props.value} onChange={e => {
+      if (props.onChange) props.onChange(e);
+    }} />
+  </Form.Field>
+);
+
+export default class EditDailyStandupForm extends Component {
   state = {
-    redirect: false,
     createdAt: null,
     whatDidIDoYesterday: '',
     whatAmIDoingToday: '',
     whatIsInMyWay: '',
   };
   currentStandupValues = {};
+
+  dismiss() {
+    if (this.props.onDismiss) this.props.onDismiss();
+  }
 
   onYesterdayChange(value) {
     this.setState({whatDidIDoYesterday: value});
@@ -26,7 +40,7 @@ export default class CreateDailyStandupView extends Component {
   }
 
   async onUpdate() {
-    const res = await fetch(`/api/sprints/${this.props.SprintId}/standups`, {
+    const res = await fetch(`/api/sprints/0/standups`, {
       method: 'PATCH',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -36,7 +50,7 @@ export default class CreateDailyStandupView extends Component {
         whatIsInMyWay: this.state.whatIsInMyWay,
       })
     });
-    if (res.ok) this.setState({redirect: true});
+    if (res.ok) this.dismiss();
   }
 
   resetForm() {
@@ -55,7 +69,7 @@ export default class CreateDailyStandupView extends Component {
       this.currentStandupValues = json;
       this.resetForm();
     } else {
-      this.setState({redirect: true});
+      this.dismiss();
     }
   }
 
@@ -64,29 +78,31 @@ export default class CreateDailyStandupView extends Component {
   }
 
   render() {
-    if (this.state.redirect) return <Redirect to={`/sprint/${this.props.SprintId}`} />;
     return (
       <Form>
-        <Header as='h1'>Edit Daily Standup Report ({dayjs(this.state.createdAt).format('ddd, MMM D, YYYY')})</Header>
-        <Form.TextArea
+        <Header>Edit Daily Standup Report ({dayjs(this.state.createdAt).format('ddd, MMM D, YYYY')})</Header>
+        <IconLabelTextArea
+          icon='history'
           label='What did I do yesterday?'
           value={this.state.whatDidIDoYesterday}
           onChange={e => this.onYesterdayChange(e.target.value)}
         />
-        <Form.TextArea
+        <IconLabelTextArea
+          icon='keyboard outline'
           label='What am I doing today?'
           value={this.state.whatAmIDoingToday}
           onChange={e => this.onTodayChange(e.target.value)}
         />
-        <Form.TextArea
+        <IconLabelTextArea
+          icon='shield'
           label='What is in my way?'
           value={this.state.whatIsInMyWay}
           onChange={e => this.onBlockingChange(e.target.value)}
         />
-        <Form.Group>
-          <Button primary icon='save' content='Update' onClick={() => this.onUpdate()} />
-          <Button icon='undo' content='Reset' onClick={() => this.resetForm()} />
-          <Button icon='close' content='Cancel' onClick={() => this.setState({redirect: true})} />
+        <Form.Group widths='equal'>
+          <Form.Button fluid primary icon='save' content='Update' onClick={() => this.onUpdate()} />
+          <Form.Button basic fluid icon='undo' content='Reset' onClick={() => this.resetForm()} />
+          <Form.Button fluid icon='close' content='Cancel' onClick={() => this.dismiss()} />
         </Form.Group>
       </Form>
     );

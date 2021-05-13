@@ -24,26 +24,16 @@ export default class DailyStandupFeed extends Component {
         <List.Header>
           <Header content='Daily Standups' />
         </List.Header>
-        <List.Item>
-          <Link to={`/sprint/${this.props.SprintId}/create-standup`}>
-            <Button fluid primary content='New Standup' />
-          </Link>
-        </List.Item>
         {this.state.standups.map((standup, i) => (
           <List.Item key={i}>
-            <DailyStandup
-              SprintId={this.props.SprintId}
-              DailyStandupId={standup.DailyStandupId}
-              createdBy={standup.createdBy}
-              createdAt={standup.createdAt}
-              updatedAt={standup.updatedAt}
-              edited={standup.createdAt !== standup.updatedAt}
-              whatDidIDoYesterday={standup.whatDidIDoYesterday}
-              whatAmIDoingToday={standup.whatAmIDoingToday}
-              whatIsInMyWay={standup.whatIsInMyWay}
-            />
+            <DailyStandup DailyStandupId={standup.DailyStandupId} />
           </List.Item>
         ))}
+        <List.Item>
+          <Link to={`/sprint/${this.props.SprintId}/create-standup`}>
+            <Button fluid primary icon='file alternate' content='New Standup' />
+          </Link>
+        </List.Item>
       </List>
     );
   }
