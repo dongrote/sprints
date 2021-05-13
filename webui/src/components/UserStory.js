@@ -1,5 +1,6 @@
 import { Button, Card, Grid } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import MultilineText from './MultilineText';
 import StatusLabel from  './StatusLabel';
 
 const UserStory = props => (
@@ -21,7 +22,11 @@ const UserStory = props => (
           </Grid.Row>
         </Grid>
       </Card.Header>
-      {props.description && <Card.Description content={props.description} />}
+      {props.description && (
+        <Card.Description>
+          <MultilineText>{props.description}</MultilineText>
+        </Card.Description>
+      )}
     </Card.Content>
     <Card.Content extra>
       <Grid columns={2}>

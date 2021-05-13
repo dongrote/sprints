@@ -6,6 +6,7 @@ import SprintFeed from '../components/SprintFeed';
 import BurndownChart from '../components/BurndownChart';
 import UserStoryColumn from '../components/UserStoryColumn';
 import NewStoryButton from '../components/NewStoryButton';
+import StackableSideBySide from '../components/StackableSideBySide';
 import ClaimStoryButton from '../components/ClaimStoryButton';
 import DailyStandupFeed from '../components/DailyStandupFeed';
 
@@ -179,34 +180,28 @@ class SprintView extends Component {
         </Grid.Row>
         <Grid.Row columns={1}>
           <Grid.Column>
-            <Grid stackable columns={2}>
-              <Grid.Row>
-                <Grid.Column>
-                  <UserStoryColumn
-                    color='orange'
-                    header='Claimed'
-                    userStories={this.state.stories.filter(story => story.completedAt === null)}
-                    onRemit={UserStoryId => this.remitUserStory(this.props.SprintId, UserStoryId)}
-                    onComplete={UserStoryId => this.completeUserStory(this.props.SprintId, UserStoryId)}
-                  />
-                </Grid.Column>
-                <Grid.Column>
-                  <UserStoryColumn
-                    color='blue'
-                    header='Done'
-                    userStories={this.state.stories.filter(story => story.completedAt !== null)}
-                  />
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
+            <StackableSideBySide
+              left={<UserStoryColumn
+                color='orange'
+                header='Claimed'
+                userStories={this.state.stories.filter(story => story.completedAt === null)}
+                onRemit={UserStoryId => this.remitUserStory(this.props.SprintId, UserStoryId)}
+                onComplete={UserStoryId => this.completeUserStory(this.props.SprintId, UserStoryId)}
+              />}
+              right={<UserStoryColumn
+                color='blue'
+                header='Done'
+                userStories={this.state.stories.filter(story => story.completedAt !== null)}
+              />}
+            />
           </Grid.Column>
         </Grid.Row>
-        <Grid.Row columns={2}>
+        <Grid.Row columns={1}>
           <Grid.Column>
-            <DailyStandupFeed SprintId={this.props.SprintId} />
-          </Grid.Column>
-          <Grid.Column>
-            <SprintFeed SprintId={this.props.SprintId} />
+            <StackableSideBySide
+              left={<DailyStandupFeed SprintId={this.props.SprintId} />}
+              right={<SprintFeed SprintId={this.props.SprintId} />}
+            />
           </Grid.Column>
         </Grid.Row>
       </Grid>

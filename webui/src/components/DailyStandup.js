@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {Button, Card, Image, List} from 'semantic-ui-react';
+import MultilineText from './MultilineText';
 import dayjs from 'dayjs';
 
 const dateFormat = 'ddd, MMM D, YYYY';
@@ -37,21 +38,27 @@ export default class DailyStandup extends Component {
                 <List.Icon name='history' />
                 <List.Content>
                   <List.Header>What did I do yesterday?</List.Header>
-                  <List.Description>{this.props.whatDidIDoYesterday}</List.Description>
+                  <List.Description>
+                    <MultilineText>{this.props.whatDidIDoYesterday}</MultilineText>
+                  </List.Description>
                 </List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name='keyboard outline' />
                 <List.Content>
                   <List.Header>What am I doing today?</List.Header>
-                  <List.Description>{this.props.whatAmIDoingToday}</List.Description>
+                  <List.Description>
+                    <MultilineText>{this.props.whatAmIDoingToday}</MultilineText>
+                  </List.Description>
                 </List.Content>
               </List.Item>
               <List.Item>
                 <List.Icon name='shield' />
                 <List.Content>
                   <List.Header>What is in my way?</List.Header>
-                  <List.Description>{this.props.whatIsInMyWay}</List.Description>
+                  <List.Description>
+                    <MultilineText>{this.props.whatIsInMyWay}</MultilineText>
+                  </List.Description>
                 </List.Content>
               </List.Item>
             </List>
